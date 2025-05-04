@@ -18,6 +18,7 @@ VSOCK_PORT = 52  # Must match the in-guest agent
 class FirecrackerAPI:
     def __init__(self, socket_path: str):
         self.socket_path = socket_path
+        self.vsock_path = None
 
     def _send(self, method: str, endpoint: str, data=None):
         cmd = ["curl", "--unix-socket", self.socket_path, "-X", method, "-s", "-w", "\n%{http_code}"]
@@ -29,38 +30,69 @@ class FirecrackerAPI:
         parts = result.stdout.strip().split("\n")
         status = int(parts[-1]) if parts else 500
         body = "\n".join(parts[:-1])
+        
+        print(f"API Request: {method} {endpoint}")
+        if data:
+            print(f"Data: {json.dumps(data, indent=2)}")
+        print(f"Response Status: {status}")
+        print(f"Response Body: {body}")
+        
         return status, body
 
     def configure_vm(self, kernel_path: str, boot_args: str, rootfs_path: str) -> bool:
-        return (
-            self._send("PUT", "/boot-source", {
-                "kernel_image_path": kernel_path,
-                "boot_args": boot_args
-            })[0] == 204 and
-            self._send("PUT", "/drives/rootfs", {
-                "drive_id": "rootfs",
-                "path_on_host": rootfs_path,
-                "is_root_device": True,
-                "is_read_only": False
-            })[0] == 204 and
-            self._send("PUT", "/machine-config", {
-                "vcpu_count": 1,
-                "mem_size_mib": 256,
-                "smt": False
-            })[0] == 204
-        )
+        # Configure boot source
+        status, body = self._send("PUT", "/boot-source", {
+            "kernel_image_path": kernel_path,
+            "boot_args": boot_args
+        })
+        if status != 204:
+            print(f"Failed to configure boot source: {status} - {body}")
+            return False
+        
+        # Configure root drive
+        status, body = self._send("PUT", "/drives/rootfs", {
+            "drive_id": "rootfs",
+            "path_on_host": rootfs_path,
+            "is_root_device": True,
+            "is_read_only": False
+        })
+        if status != 204:
+            print(f"Failed to configure root drive: {status} - {body}")
+            return False
+        
+        # Configure machine
+        status, body = self._send("PUT", "/machine-config", {
+            "vcpu_count": 1,
+            "mem_size_mib": 256,
+            "smt": False
+        })
+        if status != 204:
+            print(f"Failed to configure machine: {status} - {body}")
+            return False
+        
+        return True
 
     def configure_vsock(self, guest_cid: int = 3) -> bool:
         """Configure vsock for guest communication"""
-        return self._send("PUT", "/vsock", {
+        self.vsock_path = f"/tmp/firecracker_vsock_{uuid.uuid4()}.sock"
+        status, body = self._send("PUT", "/vsock", {
             "guest_cid": guest_cid,
-            "uds_path": f"/tmp/firecracker_vsock_{uuid.uuid4()}.sock"
-        })[0] == 204
+            "uds_path": self.vsock_path
+        })
+        if status != 204:
+            print(f"Failed to configure vsock: {status} - {body}")
+            return False
+        print(f"VSOCK configured with path: {self.vsock_path}")
+        return True
 
     def start_vm(self) -> bool:
-        return self._send("PUT", "/actions", {
+        status, body = self._send("PUT", "/actions", {
             "action_type": "InstanceStart"
-        })[0] == 204
+        })
+        if status != 204:
+            print(f"Failed to start VM: {status} - {body}")
+            return False
+        return True
 
 
 def send_code_via_vsock(code: str, language: str, filename: str, port: int = VSOCK_PORT, guest_cid: int = 3) -> Tuple[str, str]:
@@ -72,13 +104,23 @@ def send_code_via_vsock(code: str, language: str, filename: str, port: int = VSO
     }
     
     try:
-        # Use AF_VSOCK instead of AF_INET
+        # First, let's check if vsock modules are loaded
+        vsock_check = subprocess.run(['lsmod'], capture_output=True, text=True)
+        if 'vsock' not in vsock_check.stdout:
+            print("Warning: vsock modules may not be loaded")
+        
+        # Wait a bit more for the VM to fully boot and agent to start
+        time.sleep(3.0)
+        
+        # Use AF_VSOCK
         with socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM) as sock:
             sock.settimeout(EXEC_TIMEOUT)
+            print(f"Connecting to CID {guest_cid}, port {port}")
             sock.connect((guest_cid, port))  # Connect to guest CID
             
             # Send JSON request
             request_json = json.dumps(request)
+            print(f"Sending request: {request_json}")
             sock.sendall(request_json.encode('utf-8'))
             sock.shutdown(socket.SHUT_WR)
             
@@ -90,11 +132,19 @@ def send_code_via_vsock(code: str, language: str, filename: str, port: int = VSO
                     break
                 response += chunk
             
+            print(f"Received response: {response}")
             result = json.loads(response.decode('utf-8'))
             return result.get('stdout', ''), result.get('stderr', '')
             
     except socket.timeout:
         return "", f"Execution timed out after {EXEC_TIMEOUT} seconds"
+    except OSError as e:
+        if e.errno == 97:  # Address family not supported
+            return "", "VSOCK not supported on this system. Make sure vsock kernel modules are loaded."
+        elif e.errno == 19:  # No such device
+            return "", "VSOCK device not found. Make sure Firecracker has VSOCK configured and the VM is running."
+        else:
+            return "", f"VSock communication error: {e}"
     except Exception as e:
         return "", f"VSock communication error: {e}"
 
@@ -109,10 +159,14 @@ def execute_code(code: str, language: Language, filename: str) -> Tuple[str, str
 
     config = get_config(language, filename)
     rootfs_path = ROOTFS_PATH.format(config["rootfs"])
+    
     if not os.path.exists(rootfs_path):
         return "", f"Missing rootfs: {rootfs_path}"
     if not os.path.exists(KERNEL_PATH):
         return "", f"Missing kernel: {KERNEL_PATH}"
+    
+    print(f"Using rootfs: {rootfs_path}")
+    print(f"Using kernel: {KERNEL_PATH}")
 
     if os.path.exists(socket_path):
         os.remove(socket_path)
@@ -150,6 +204,7 @@ def execute_code(code: str, language: Language, filename: str) -> Tuple[str, str
             return "", "Failed to start VM"
 
         # Wait for VM to boot and agent to start
+        print("Waiting for VM to boot...")
         time.sleep(2.0)
 
         try:
@@ -166,15 +221,18 @@ def execute_code(code: str, language: Language, filename: str) -> Tuple[str, str
         except Exception:
             fc_process.kill()
         fc_log.close()
+        
         if os.path.exists(socket_path):
             os.remove(socket_path)
-        if os.path.exists(job_dir):
-            shutil.rmtree(job_dir)
+        
         # Read log for debugging
         try:
             with open(output_file, 'r') as f:
                 log_content = f.read()
                 if log_content:
-                    print(f"Firecracker log: {log_content}")
+                    print(f"Firecracker log:\n{log_content}")
         except:
             pass
+        
+        if os.path.exists(job_dir):
+            shutil.rmtree(job_dir)
