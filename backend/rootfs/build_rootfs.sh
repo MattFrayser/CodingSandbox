@@ -13,7 +13,7 @@ echo "[*] Building rootfs images for all languages..."
 cd scripts
 
 # Array of languages to build
-LANGS=(python c cpp java nodejs go rust)
+LANGS=(rust)
 
 # Build each language
 for lang in "${LANGS[@]}"; do

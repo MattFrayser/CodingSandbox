@@ -4,7 +4,7 @@ set -e
 # Node.js specific configuration (minimal)
 export LANGUAGE="nodejs"
 export IMG="nodejs.ext4"
-export SIZE_MB=120  # Small for Node.js
+export SIZE_MB=300 
 export PACKAGES="nodejs"  # Alpine's Node.js without npm for minimal size
 
 # Source the common build template

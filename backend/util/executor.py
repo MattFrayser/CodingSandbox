@@ -13,7 +13,7 @@ EXEC_TIMEOUT = int(os.getenv("EXEC_TIMEOUT", "10"))
 FC_SOCKET_PATH = "/tmp/firecracker_socket_{}"
 ROOTFS_PATH = "/var/lib/firecracker/rootfs/{}.ext4"
 KERNEL_PATH = "/var/lib/firecracker/kernels/vmlinux"
-VSOCK_PORT = 1234  # Must match the in-guest agent
+VSOCK_PORT = 52  # Must match the in-guest agent
 
 class FirecrackerAPI:
     def __init__(self, socket_path: str):
@@ -72,11 +72,10 @@ def send_code_via_vsock(code: str, language: str, filename: str, port: int = VSO
     }
     
     try:
-        # For testing with TCP (replace with AF_VSOCK in production)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        # Use AF_VSOCK instead of AF_INET
+        with socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM) as sock:
             sock.settimeout(EXEC_TIMEOUT)
-            sock.connect(('127.0.0.1', port))  # For TCP testing
-            # In production: sock.connect((guest_cid, port))
+            sock.connect((guest_cid, port))  # Connect to guest CID
             
             # Send JSON request
             request_json = json.dumps(request)
@@ -91,16 +90,13 @@ def send_code_via_vsock(code: str, language: str, filename: str, port: int = VSO
                     break
                 response += chunk
             
-            # Parse JSON response
             result = json.loads(response.decode('utf-8'))
             return result.get('stdout', ''), result.get('stderr', '')
             
     except socket.timeout:
         return "", f"Execution timed out after {EXEC_TIMEOUT} seconds"
-    except json.JSONDecodeError as e:
-        return "", f"Failed to parse response: {e}"
     except Exception as e:
-        return "", f"Communication error: {e}"
+        return "", f"VSock communication error: {e}"
 
 
 def execute_code(code: str, language: Language, filename: str) -> Tuple[str, str]:

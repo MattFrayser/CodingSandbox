@@ -4,8 +4,8 @@ set -e
 # Rust specific configuration (minimal)
 export LANGUAGE="rust"
 export IMG="rust.ext4"
-export SIZE_MB=100  # Rust compiler needs more space
-export PACKAGES="rust cargo"  # Alpine's Rust toolchain
+export SIZE_MB=1000  # Increased from 100
+export PACKAGES="rust cargo"
 
 # Source the common build template
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

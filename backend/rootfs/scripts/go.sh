@@ -4,7 +4,7 @@ set -e
 # Go specific configuration (minimal)
 export LANGUAGE="go"
 export IMG="go.ext4"
-export SIZE_MB=50  # Go runtime is compact
+export SIZE_MB=400  
 export PACKAGES="go"  # Alpine's Go package
 
 # Source the common build template

@@ -4,7 +4,7 @@ set -e
 # Python specific configuration
 export LANGUAGE="python"
 export IMG="python.ext4"
-export SIZE_MB=50
+export SIZE_MB=150
 export PACKAGES="python3 py3-pip"
 
 # Source the common build template

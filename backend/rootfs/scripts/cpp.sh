@@ -4,7 +4,7 @@ set -e
 # C++ specific configuration (minimal)
 export LANGUAGE="cpp"
 export IMG="cpp.ext4"
-export SIZE_MB=100  # C++ compiler only
+export SIZE_MB=300  
 export PACKAGES="g++ musl-dev"  # Minimal C++ toolchain
 
 # Source the common build template

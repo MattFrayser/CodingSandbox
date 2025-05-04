@@ -1,3 +1,4 @@
+# Updated common.sh with Fixes
 #!/bin/bash
 # Common template for minimal Alpine-based rootfs images
 set -e
@@ -107,11 +108,14 @@ install_minimal_packages() {
 install_agent() {
     echo "[*] Installing agent..."
     
-    if [ -f ../agent/agent ]; then
-        cp ../agent/agent "$MNT/usr/local/bin/"
-        chmod +x "$MNT/usr/local/bin/agent"
+    # Check if the agent binary exists
+
+    if [ -f ../../agent/agent ]; then
+        cp ../../agent/agent "$MNT/usr/local/bin/"
+        echo "[✓] Agent binary installed successfully"
     else
-        echo "[!] Warning: agent binary not found at ../agent/agent"
+        echo "[!] Warning: agent binary not found at agent/agent"
+        echo "[!] Please build the agent first using build_agent.sh"
     fi
     
     # Create minimal init script

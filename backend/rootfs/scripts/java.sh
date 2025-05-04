@@ -4,7 +4,7 @@ set -e
 # Java specific configuration (minimal JRE only)
 export LANGUAGE="java"
 export IMG="java.ext4"
-export SIZE_MB=120  # Java needs more space even minimal
+export SIZE_MB=250  
 export PACKAGES="openjdk17-jre-headless"  # Headless JRE only, no JDK
 
 # Source the common build template
