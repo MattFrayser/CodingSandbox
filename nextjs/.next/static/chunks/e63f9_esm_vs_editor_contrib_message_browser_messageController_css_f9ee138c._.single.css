@@ -1,0 +1,91 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/message/browser/messageController.css [app-client] (css) */
+.monaco-editor .monaco-editor-overlaymessage {
+  z-index: 10000;
+  padding-bottom: 8px;
+}
+
+.monaco-editor .monaco-editor-overlaymessage.below {
+  z-index: 10000;
+  padding-top: 8px;
+  padding-bottom: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.monaco-editor .monaco-editor-overlaymessage.fadeIn {
+  animation: .15s ease-out fadeIn;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.monaco-editor .monaco-editor-overlaymessage.fadeOut {
+  animation: .1s ease-out fadeOut;
+}
+
+.monaco-editor .monaco-editor-overlaymessage .message {
+  color: var(--vscode-editorHoverWidget-foreground);
+  background-color: var(--vscode-editorHoverWidget-background);
+  border: 1px solid var(--vscode-inputValidation-infoBorder);
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+.monaco-editor .monaco-editor-overlaymessage .message p {
+  margin-block: 0;
+}
+
+.monaco-editor .monaco-editor-overlaymessage .message a {
+  color: var(--vscode-textLink-foreground);
+}
+
+.monaco-editor .monaco-editor-overlaymessage .message a:hover {
+  color: var(--vscode-textLink-activeForeground);
+}
+
+.monaco-editor.hc-black .monaco-editor-overlaymessage .message, .monaco-editor.hc-light .monaco-editor-overlaymessage .message {
+  border-width: 2px;
+}
+
+.monaco-editor .monaco-editor-overlaymessage .anchor {
+  z-index: 1000;
+  border: 8px solid #0000;
+  position: absolute;
+  left: 2px;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.monaco-editor .monaco-editor-overlaymessage .anchor.top {
+  border-bottom-color: var(--vscode-inputValidation-infoBorder);
+}
+
+.monaco-editor .monaco-editor-overlaymessage .anchor.below {
+  border-top-color: var(--vscode-inputValidation-infoBorder);
+}
+
+.monaco-editor .monaco-editor-overlaymessage:not(.below) .anchor.top, .monaco-editor .monaco-editor-overlaymessage.below .anchor.below {
+  display: none;
+}
+
+.monaco-editor .monaco-editor-overlaymessage.below .anchor.top {
+  display: inherit;
+  top: -8px;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_message_browser_messageController_css_f9ee138c._.single.css.map*/

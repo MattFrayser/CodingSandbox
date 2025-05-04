@@ -1,0 +1,62 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lines/viewLines.css [app-client] (css) */
+.mtkcontrol {
+  color: #fff !important;
+  background: #960000 !important;
+}
+
+.mtkoverflow {
+  background-color: var(--vscode-button-background, var(--vscode-editor-background));
+  color: var(--vscode-button-foreground, var(--vscode-editor-foreground));
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--vscode-contrastBorder);
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+.mtkoverflow:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.monaco-editor.no-user-select .lines-content, .monaco-editor.no-user-select .view-line, .monaco-editor.no-user-select .view-lines {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.monaco-editor.mac .lines-content:hover, .monaco-editor.mac .view-line:hover, .monaco-editor.mac .view-lines:hover {
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.monaco-editor.enable-user-select {
+  user-select: initial;
+  -webkit-user-select: initial;
+}
+
+.monaco-editor .view-lines {
+  white-space: nowrap;
+}
+
+.monaco-editor .view-line {
+  width: 100%;
+  position: absolute;
+}
+
+.monaco-editor .lines-content > .view-lines > .view-line > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.monaco-editor .mtkw {
+  color: var(--vscode-editorWhitespace-foreground) !important;
+}
+
+.monaco-editor .mtkz {
+  display: inline-block;
+  color: var(--vscode-editorWhitespace-foreground) !important;
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_editor_browser_viewParts_lines_viewLines_css_f9ee138c._.single.css.map*/

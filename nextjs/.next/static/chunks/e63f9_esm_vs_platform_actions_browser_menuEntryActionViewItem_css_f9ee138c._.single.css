@@ -1,0 +1,61 @@
+/* [project]/node_modules/monaco-editor/esm/vs/platform/actions/browser/menuEntryActionViewItem.css [app-client] (css) */
+.monaco-action-bar .action-item.menu-entry .action-label.icon {
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.monaco-action-bar .action-item.menu-entry.text-only .action-label {
+  color: var(--vscode-descriptionForeground);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.monaco-action-bar .action-item.menu-entry.text-only.use-comma:not(:last-of-type) .action-label:after {
+  content: ", ";
+}
+
+.monaco-action-bar .action-item.menu-entry.text-only + .action-item:not(.text-only) > .monaco-dropdown .action-label {
+  color: var(--vscode-descriptionForeground);
+}
+
+.monaco-dropdown-with-default {
+  border-radius: 5px;
+  flex-direction: row;
+  display: flex !important;
+}
+
+.monaco-dropdown-with-default > .action-container > .action-label {
+  margin-right: 0;
+}
+
+.monaco-dropdown-with-default > .action-container.menu-entry > .action-label.icon {
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.monaco-dropdown-with-default:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+.monaco-dropdown-with-default > .dropdown-action-container > .monaco-dropdown > .dropdown-label .codicon[class*="codicon-"] {
+  margin-left: -3px;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.monaco-dropdown-with-default > .dropdown-action-container > .monaco-dropdown > .dropdown-label > .action-label {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  display: block;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_platform_actions_browser_menuEntryActionViewItem_css_f9ee138c._.single.css.map*/

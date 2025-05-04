@@ -1,0 +1,73 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/peekView/browser/media/peekViewWidget.css [app-client] (css) */
+.monaco-editor .peekview-widget .head {
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  display: flex;
+}
+
+.monaco-editor .peekview-widget .head .peekview-title {
+  text-overflow: ellipsis;
+  align-items: baseline;
+  min-width: 0;
+  margin-left: 20px;
+  font-size: 13px;
+  display: flex;
+  overflow: hidden;
+}
+
+.monaco-editor .peekview-widget .head .peekview-title.clickable {
+  cursor: pointer;
+}
+
+.monaco-editor .peekview-widget .head .peekview-title .dirname:not(:empty) {
+  margin-left: .5em;
+  font-size: .9em;
+}
+
+.monaco-editor .peekview-widget .head .peekview-title .meta {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.monaco-editor .peekview-widget .head .peekview-title .dirname, .monaco-editor .peekview-widget .head .peekview-title .filename {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.monaco-editor .peekview-widget .head .peekview-title .meta:not(:empty):before {
+  content: "-";
+  padding: 0 .3em;
+}
+
+.monaco-editor .peekview-widget .head .peekview-actions {
+  text-align: right;
+  flex: 1;
+  padding-right: 2px;
+}
+
+.monaco-editor .peekview-widget .head .peekview-actions > .monaco-action-bar {
+  display: inline-block;
+}
+
+.monaco-editor .peekview-widget .head .peekview-actions > .monaco-action-bar, .monaco-editor .peekview-widget .head .peekview-actions > .monaco-action-bar > .actions-container {
+  height: 100%;
+}
+
+.monaco-editor .peekview-widget > .body {
+  border-top: 1px solid;
+  position: relative;
+}
+
+.monaco-editor .peekview-widget .head .peekview-title .codicon {
+  align-self: center;
+  margin-right: 4px;
+}
+
+.monaco-editor .peekview-widget .monaco-list .monaco-list-row.focused .codicon {
+  color: inherit !important;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_peekView_browser_media_peekViewWidget_css_f9ee138c._.single.css.map*/

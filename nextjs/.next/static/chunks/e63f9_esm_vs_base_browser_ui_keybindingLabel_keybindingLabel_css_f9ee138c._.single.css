@@ -1,0 +1,35 @@
+/* [project]/node_modules/monaco-editor/esm/vs/base/browser/ui/keybindingLabel/keybindingLabel.css [app-client] (css) */
+.monaco-keybinding {
+  align-items: center;
+  line-height: 10px;
+  display: flex;
+}
+
+.monaco-keybinding > .monaco-keybinding-key {
+  vertical-align: middle;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  margin: 0 2px;
+  padding: 3px 5px;
+  font-size: 11px;
+  display: inline-block;
+}
+
+.monaco-keybinding > .monaco-keybinding-key:first-child {
+  margin-left: 0;
+}
+
+.monaco-keybinding > .monaco-keybinding-key:last-child {
+  margin-right: 0;
+}
+
+.monaco-keybinding > .monaco-keybinding-key-separator {
+  display: inline-block;
+}
+
+.monaco-keybinding > .monaco-keybinding-key-chord-separator {
+  width: 6px;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_base_browser_ui_keybindingLabel_keybindingLabel_css_f9ee138c._.single.css.map*/

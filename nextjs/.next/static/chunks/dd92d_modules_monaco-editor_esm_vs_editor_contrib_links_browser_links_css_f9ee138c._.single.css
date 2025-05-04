@@ -1,0 +1,12 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/links/browser/links.css [app-client] (css) */
+.monaco-editor .detected-link, .monaco-editor .detected-link-active {
+  text-underline-position: under;
+  text-decoration: underline;
+}
+
+.monaco-editor .detected-link-active {
+  cursor: pointer;
+  color: var(--vscode-editorLink-activeForeground) !important;
+}
+
+/*# sourceMappingURL=dd92d_modules_monaco-editor_esm_vs_editor_contrib_links_browser_links_css_f9ee138c._.single.css.map*/

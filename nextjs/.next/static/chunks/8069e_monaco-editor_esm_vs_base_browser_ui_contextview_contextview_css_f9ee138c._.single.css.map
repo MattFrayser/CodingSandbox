@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.css"],"sourcesContent":["/*---------------------------------------------------------------------------------------------\n *  Copyright (c) Microsoft Corporation. All rights reserved.\n *  Licensed under the MIT License. See License.txt in the project root for license information.\n *--------------------------------------------------------------------------------------------*/\n\n.context-view {\n\tposition: absolute;\n}\n\n.context-view.fixed {\n\tall: initial;\n\tfont-family: inherit;\n\tfont-size: 13px;\n\tposition: fixed;\n\tcolor: inherit;\n}\n"],"names":[],"mappings":"AAKA;;;;AAIA","ignoreList":[0]}}]
+}

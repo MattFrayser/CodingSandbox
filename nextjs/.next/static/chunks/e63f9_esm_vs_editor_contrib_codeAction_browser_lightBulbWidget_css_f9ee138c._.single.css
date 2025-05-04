@@ -1,0 +1,58 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/codeAction/browser/lightBulbWidget.css [app-client] (css) */
+.monaco-editor .lightBulbWidget {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.monaco-editor .lightBulbWidget:hover {
+  cursor: pointer;
+}
+
+.monaco-editor .lightBulbWidget.codicon-light-bulb, .monaco-editor .lightBulbWidget.codicon-lightbulb-sparkle {
+  color: var(--vscode-editorLightBulb-foreground);
+}
+
+.monaco-editor .lightBulbWidget.codicon-lightbulb-autofix, .monaco-editor .lightBulbWidget.codicon-lightbulb-sparkle-autofix {
+  color: var(--vscode-editorLightBulbAutoFix-foreground, var(--vscode-editorLightBulb-foreground));
+}
+
+.monaco-editor .lightBulbWidget.codicon-sparkle-filled {
+  color: var(--vscode-editorLightBulbAi-foreground, var(--vscode-icon-foreground));
+}
+
+.monaco-editor .lightBulbWidget:before {
+  z-index: 2;
+  position: relative;
+}
+
+.monaco-editor .lightBulbWidget:after {
+  content: "";
+  opacity: .3;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.monaco-editor .glyph-margin-widgets .cgmr[class*="codicon-gutter-lightbulb"] {
+  cursor: pointer;
+  display: block;
+}
+
+.monaco-editor .glyph-margin-widgets .cgmr.codicon-gutter-lightbulb, .monaco-editor .glyph-margin-widgets .cgmr.codicon-gutter-lightbulb-sparkle {
+  color: var(--vscode-editorLightBulb-foreground);
+}
+
+.monaco-editor .glyph-margin-widgets .cgmr.codicon-gutter-lightbulb-auto-fix, .monaco-editor .glyph-margin-widgets .cgmr.codicon-gutter-lightbulb-aifix-auto-fix {
+  color: var(--vscode-editorLightBulbAutoFix-foreground, var(--vscode-editorLightBulb-foreground));
+}
+
+.monaco-editor .glyph-margin-widgets .cgmr.codicon-gutter-lightbulb-sparkle-filled {
+  color: var(--vscode-editorLightBulbAi-foreground, var(--vscode-icon-foreground));
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_codeAction_browser_lightBulbWidget_css_f9ee138c._.single.css.map*/

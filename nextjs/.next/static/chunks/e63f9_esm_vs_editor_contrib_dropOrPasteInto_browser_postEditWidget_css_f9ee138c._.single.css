@@ -1,0 +1,24 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/dropOrPasteInto/browser/postEditWidget.css [app-client] (css) */
+.post-edit-widget {
+  box-shadow: 0 0 8px 2px var(--vscode-widget-shadow);
+  border: 1px solid var(--vscode-widget-border, transparent);
+  background-color: var(--vscode-editorWidget-background);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.post-edit-widget .monaco-button {
+  border: none;
+  border-radius: 0;
+  padding: 2px;
+}
+
+.post-edit-widget .monaco-button:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground) !important;
+}
+
+.post-edit-widget .monaco-button .codicon {
+  margin: 0;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_dropOrPasteInto_browser_postEditWidget_css_f9ee138c._.single.css.map*/

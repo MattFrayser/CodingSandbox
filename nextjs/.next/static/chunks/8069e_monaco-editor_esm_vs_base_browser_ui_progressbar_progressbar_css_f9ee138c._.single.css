@@ -1,0 +1,55 @@
+/* [project]/node_modules/monaco-editor/esm/vs/base/browser/ui/progressbar/progressbar.css [app-client] (css) */
+.monaco-progress-container {
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+}
+
+.monaco-progress-container .progress-bit {
+  width: 2%;
+  height: 2px;
+  display: none;
+  position: absolute;
+  left: 0;
+}
+
+.monaco-progress-container.active .progress-bit {
+  display: inherit;
+}
+
+.monaco-progress-container.discrete .progress-bit {
+  transition: width .1s linear;
+  left: 0;
+}
+
+.monaco-progress-container.discrete.done .progress-bit {
+  width: 100%;
+}
+
+.monaco-progress-container.infinite .progress-bit {
+  animation-name: progress;
+  animation-duration: 4s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+.monaco-progress-container.infinite.infinite-long-running .progress-bit {
+  animation-timing-function: steps(100, end);
+}
+
+@keyframes progress {
+  from {
+    transform: translateX(0%)scaleX(1);
+  }
+
+  50% {
+    transform: translateX(2500%)scaleX(3);
+  }
+
+  to {
+    transform: translateX(4900%)scaleX(1);
+  }
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_base_browser_ui_progressbar_progressbar_css_f9ee138c._.single.css.map*/

@@ -1,0 +1,8 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/unicodeHighlighter/browser/unicodeHighlighter.css [app-client] (css) */
+.monaco-editor .unicode-highlight {
+  border: 1px solid var(--vscode-editorUnicodeHighlight-border);
+  background-color: var(--vscode-editorUnicodeHighlight-background);
+  box-sizing: border-box;
+}
+
+/*# sourceMappingURL=6e1d5_vs_editor_contrib_unicodeHighlighter_browser_unicodeHighlighter_css_f9ee138c._.single.css.map*/

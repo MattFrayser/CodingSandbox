@@ -1,0 +1,62 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/codelens/browser/codelensWidget.css [app-client] (css) */
+.monaco-editor .codelens-decoration {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--vscode-editorCodeLens-foreground);
+  line-height: var(--vscode-editorCodeLens-lineHeight);
+  font-size: var(--vscode-editorCodeLens-fontSize);
+  padding-right: calc(var(--vscode-editorCodeLens-fontSize) * .5);
+  font-feature-settings: var(--vscode-editorCodeLens-fontFeatureSettings);
+  font-family: var(--vscode-editorCodeLens-fontFamily), var(--vscode-editorCodeLens-fontFamilyDefault);
+  display: inline-block;
+  overflow: hidden;
+}
+
+.monaco-editor .codelens-decoration > span, .monaco-editor .codelens-decoration > a {
+  -webkit-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+  vertical-align: sub;
+}
+
+.monaco-editor .codelens-decoration > a {
+  text-decoration: none;
+}
+
+.monaco-editor .codelens-decoration > a:hover {
+  cursor: pointer;
+  color: var(--vscode-editorLink-activeForeground) !important;
+}
+
+.monaco-editor .codelens-decoration > a:hover .codicon {
+  color: var(--vscode-editorLink-activeForeground) !important;
+}
+
+.monaco-editor .codelens-decoration .codicon {
+  vertical-align: middle;
+  color: var(--vscode-editorCodeLens-foreground);
+  line-height: var(--vscode-editorCodeLens-lineHeight);
+  font-size: var(--vscode-editorCodeLens-fontSize);
+  color: currentColor !important;
+}
+
+.monaco-editor .codelens-decoration > a:hover .codicon:before {
+  cursor: pointer;
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.monaco-editor .codelens-decoration.fadein {
+  animation: .1s linear fadein;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_codelens_browser_codelensWidget_css_f9ee138c._.single.css.map*/

@@ -1,0 +1,69 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/stickyScroll/browser/stickyScroll.css [app-client] (css) */
+.monaco-editor .sticky-widget {
+  overflow: hidden;
+}
+
+.monaco-editor .sticky-widget-line-numbers {
+  float: left;
+  background-color: inherit;
+}
+
+.monaco-editor .sticky-widget-lines-scrollable {
+  width: var(--vscode-editorStickyScroll-scrollableWidth);
+  background-color: inherit;
+  display: inline-block;
+  position: absolute;
+  overflow: hidden;
+}
+
+.monaco-editor .sticky-widget-lines {
+  background-color: inherit;
+  position: absolute;
+}
+
+.monaco-editor .sticky-line-number, .monaco-editor .sticky-line-content {
+  color: var(--vscode-editorLineNumber-foreground);
+  white-space: nowrap;
+  background-color: inherit;
+  display: inline-block;
+  position: absolute;
+}
+
+.monaco-editor .sticky-line-number .codicon-folding-expanded, .monaco-editor .sticky-line-number .codicon-folding-collapsed {
+  float: right;
+  transition: var(--vscode-editorStickyScroll-foldingOpacityTransition);
+}
+
+.monaco-editor .sticky-line-content {
+  width: var(--vscode-editorStickyScroll-scrollableWidth);
+  background-color: inherit;
+  white-space: nowrap;
+}
+
+.monaco-editor .sticky-line-number-inner {
+  text-align: right;
+  display: inline-block;
+}
+
+.monaco-editor .sticky-widget {
+  border-bottom: 1px solid var(--vscode-editorStickyScroll-border);
+}
+
+.monaco-editor .sticky-line-content:hover {
+  background-color: var(--vscode-editorStickyScrollHover-background);
+  cursor: pointer;
+}
+
+.monaco-editor .sticky-widget {
+  width: 100%;
+  box-shadow: var(--vscode-editorStickyScroll-shadow) 0 4px 2px -2px;
+  z-index: 4;
+  background-color: var(--vscode-editorStickyScroll-background);
+  right: initial !important;
+}
+
+.monaco-editor .sticky-widget.peek {
+  background-color: var(--vscode-peekViewEditorStickyScroll-background);
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_stickyScroll_browser_stickyScroll_css_f9ee138c._.single.css.map*/

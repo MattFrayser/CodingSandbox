@@ -1,0 +1,14 @@
+/* [project]/node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.css [app-client] (css) */
+.context-view {
+  position: absolute;
+}
+
+.context-view.fixed {
+  all: initial;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  position: fixed;
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_base_browser_ui_contextview_contextview_css_f9ee138c._.single.css.map*/

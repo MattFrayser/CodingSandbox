@@ -1,0 +1,9 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/find/browser/findOptionsWidget.css [app-client] (css) */
+.monaco-editor .findOptionsWidget {
+  background-color: var(--vscode-editorWidget-background);
+  color: var(--vscode-editorWidget-foreground);
+  box-shadow: 0 0 8px 2px var(--vscode-widget-shadow);
+  border: 2px solid var(--vscode-contrastBorder);
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_editor_contrib_find_browser_findOptionsWidget_css_f9ee138c._.single.css.map*/

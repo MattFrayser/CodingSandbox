@@ -1,0 +1,8 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/gotoSymbol/browser/link/goToDefinitionAtPosition.css [app-client] (css) */
+.monaco-editor .goto-definition-link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--vscode-editorLink-activeForeground) !important;
+}
+
+/*# sourceMappingURL=6e1d5_vs_editor_contrib_gotoSymbol_browser_link_goToDefinitionAtPosition_css_f9ee138c._.single.css.map*/

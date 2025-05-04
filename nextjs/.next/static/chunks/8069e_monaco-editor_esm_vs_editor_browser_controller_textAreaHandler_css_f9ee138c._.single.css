@@ -1,0 +1,23 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/controller/textAreaHandler.css [app-client] (css) */
+.monaco-editor .inputarea {
+  resize: none;
+  color: #0000;
+  z-index: -10;
+  background-color: #0000;
+  border: none;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  overflow: hidden;
+  outline: none !important;
+}
+
+.monaco-editor .inputarea.ime-input {
+  z-index: 10;
+  caret-color: var(--vscode-editorCursor-foreground);
+  color: var(--vscode-editor-foreground);
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_editor_browser_controller_textAreaHandler_css_f9ee138c._.single.css.map*/

@@ -1,0 +1,15 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/currentLineHighlight/currentLineHighlight.css [app-client] (css) */
+.monaco-editor .view-overlays .current-line, .monaco-editor .margin-view-overlays .current-line {
+  box-sizing: border-box;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.monaco-editor .margin-view-overlays .current-line.current-line-margin.current-line-margin-both {
+  border-right: 0;
+}
+
+/*# sourceMappingURL=971d5_editor_browser_viewParts_currentLineHighlight_currentLineHighlight_css_f9ee138c._.single.css.map*/

@@ -1,0 +1,39 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/inlineEdits/browser/inlineEditsWidget.css [app-client] (css) */
+.monaco-editor div.inline-edits-widget {
+  --widget-color: var(--vscode-notifications-background);
+}
+
+.monaco-editor div.inline-edits-widget .promptEditor .monaco-editor {
+  --vscode-editor-placeholder-foreground: var(--vscode-editorGhostText-foreground);
+}
+
+.monaco-editor div.inline-edits-widget .toolbar, .monaco-editor div.inline-edits-widget .promptEditor {
+  opacity: 0;
+  transition: opacity .2s ease-in-out;
+}
+
+:is(.monaco-editor div.inline-edits-widget:hover, .monaco-editor div.inline-edits-widget.focused) .toolbar, :is(.monaco-editor div.inline-edits-widget:hover, .monaco-editor div.inline-edits-widget.focused) .promptEditor {
+  opacity: 1;
+}
+
+.monaco-editor div.inline-edits-widget .preview .monaco-editor {
+  --vscode-editor-background: var(--widget-color);
+}
+
+.monaco-editor div.inline-edits-widget .preview .monaco-editor .mtk1 {
+  color: var(--vscode-editorGhostText-foreground);
+}
+
+.monaco-editor div.inline-edits-widget .preview .monaco-editor .view-overlays .current-line-exact, .monaco-editor div.inline-edits-widget .preview .monaco-editor .current-line-margin {
+  border: none;
+}
+
+.monaco-editor div.inline-edits-widget svg .gradient-start {
+  stop-color: var(--vscode-editor-background);
+}
+
+.monaco-editor div.inline-edits-widget svg .gradient-stop {
+  stop-color: var(--widget-color);
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_inlineEdits_browser_inlineEditsWidget_css_f9ee138c._.single.css.map*/

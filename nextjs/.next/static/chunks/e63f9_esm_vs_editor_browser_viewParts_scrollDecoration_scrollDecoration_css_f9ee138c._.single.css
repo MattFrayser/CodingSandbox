@@ -1,0 +1,10 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/scrollDecoration/scrollDecoration.css [app-client] (css) */
+.monaco-editor .scroll-decoration {
+  height: 6px;
+  box-shadow: var(--vscode-scrollbar-shadow) 0 6px 6px -6px inset;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_browser_viewParts_scrollDecoration_scrollDecoration_css_f9ee138c._.single.css.map*/

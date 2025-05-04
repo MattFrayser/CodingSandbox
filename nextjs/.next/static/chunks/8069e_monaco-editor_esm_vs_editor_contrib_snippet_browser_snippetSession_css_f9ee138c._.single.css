@@ -1,0 +1,17 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/snippet/browser/snippetSession.css [app-client] (css) */
+.monaco-editor .snippet-placeholder {
+  background-color: var(--vscode-editor-snippetTabstopHighlightBackground, transparent);
+  outline-width: 1px;
+  outline-style: solid;
+  outline-color: var(--vscode-editor-snippetTabstopHighlightBorder, transparent);
+  min-width: 2px;
+}
+
+.monaco-editor .finish-snippet-placeholder {
+  background-color: var(--vscode-editor-snippetFinalTabstopHighlightBackground, transparent);
+  outline-width: 1px;
+  outline-style: solid;
+  outline-color: var(--vscode-editor-snippetFinalTabstopHighlightBorder, transparent);
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_editor_contrib_snippet_browser_snippetSession_css_f9ee138c._.single.css.map*/

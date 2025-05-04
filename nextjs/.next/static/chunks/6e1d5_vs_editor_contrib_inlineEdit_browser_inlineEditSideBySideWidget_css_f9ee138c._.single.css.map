@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/node_modules/monaco-editor/esm/vs/editor/contrib/inlineEdit/browser/inlineEditSideBySideWidget.css"],"sourcesContent":["/*---------------------------------------------------------------------------------------------\n *  Copyright (c) Microsoft Corporation. All rights reserved.\n *  Licensed under the MIT License. See License.txt in the project root for license information.\n *--------------------------------------------------------------------------------------------*/\n\n.monaco-editor .inlineEditSideBySide {\n\tz-index: 39;\n\tcolor: var(--vscode-editorHoverWidget-foreground);\n\tbackground-color: var(--vscode-editorHoverWidget-background);\n\tborder: 1px solid var(--vscode-editorHoverWidget-border);\n\twhite-space: pre;\n}\n"],"names":[],"mappings":"AAKA","ignoreList":[0]}}]
+}

@@ -1,0 +1,77 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursors.css [app-client] (css) */
+.monaco-editor .cursors-layer {
+  position: absolute;
+  top: 0;
+}
+
+.monaco-editor .cursors-layer > .cursor {
+  box-sizing: border-box;
+  position: absolute;
+  overflow: hidden;
+}
+
+.monaco-editor .cursors-layer.cursor-smooth-caret-animation > .cursor {
+  transition: all 80ms;
+}
+
+.monaco-editor .cursors-layer.cursor-block-outline-style > .cursor {
+  border-style: solid;
+  border-width: 1px;
+  background: none !important;
+}
+
+.monaco-editor .cursors-layer.cursor-underline-style > .cursor {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  background: none !important;
+}
+
+.monaco-editor .cursors-layer.cursor-underline-thin-style > .cursor {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  background: none !important;
+}
+
+@keyframes monaco-cursor-smooth {
+  0%, 20% {
+    opacity: 1;
+  }
+
+  60%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes monaco-cursor-phase {
+  0%, 20% {
+    opacity: 1;
+  }
+
+  90%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes monaco-cursor-expand {
+  0%, 20% {
+    transform: scaleY(1);
+  }
+
+  80%, 100% {
+    transform: scaleY(0);
+  }
+}
+
+.cursor-smooth {
+  animation: .5s ease-in-out 20 alternate monaco-cursor-smooth;
+}
+
+.cursor-phase {
+  animation: .5s ease-in-out 20 alternate monaco-cursor-phase;
+}
+
+.cursor-expand > .cursor {
+  animation: .5s ease-in-out 20 alternate monaco-cursor-expand;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_browser_viewParts_viewCursors_viewCursors_css_f9ee138c._.single.css.map*/

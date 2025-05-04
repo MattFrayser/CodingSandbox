@@ -1,0 +1,27 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/inlineEdit/browser/inlineEdit.css [app-client] (css) */
+.monaco-editor .inline-edit-remove {
+  background-color: var(--vscode-editorGhostText-background);
+  font-style: italic;
+}
+
+.monaco-editor .inline-edit-hidden {
+  opacity: 0;
+  font-size: 0;
+}
+
+.monaco-editor .inline-edit-decoration, .monaco-editor .suggest-preview-text .inline-edit {
+  font-style: italic;
+}
+
+.monaco-editor .inline-completion-text-to-replace {
+  text-underline-position: under;
+  text-decoration: underline;
+}
+
+.monaco-editor .inline-edit-decoration, .monaco-editor .inline-edit-decoration-preview, .monaco-editor .suggest-preview-text .inline-edit {
+  background-color: var(--vscode-editorGhostText-background);
+  border: 1px solid var(--vscode-editorGhostText-border);
+  color: var(--vscode-editorGhostText-foreground) !important;
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_editor_contrib_inlineEdit_browser_inlineEdit_css_f9ee138c._.single.css.map*/

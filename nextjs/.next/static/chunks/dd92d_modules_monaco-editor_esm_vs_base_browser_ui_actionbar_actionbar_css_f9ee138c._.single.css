@@ -1,0 +1,109 @@
+/* [project]/node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionbar.css [app-client] (css) */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+.monaco-action-bar .actions-container {
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+}
+
+.monaco-action-bar.vertical .actions-container {
+  display: inline-block;
+}
+
+.monaco-action-bar .action-item {
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  display: block;
+  position: relative;
+}
+
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+.monaco-action-bar .action-item .icon, .monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+.monaco-action-bar .action-item .codicon {
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  display: flex;
+}
+
+.monaco-action-bar .action-label {
+  border-radius: 5px;
+  padding: 3px;
+  font-size: 11px;
+  display: flex;
+}
+
+.monaco-action-bar .action-item.disabled .action-label, .monaco-action-bar .action-item.disabled .action-label:before, .monaco-action-bar .action-item.disabled .action-label:hover {
+  color: var(--vscode-disabledForeground);
+}
+
+.monaco-action-bar.vertical {
+  text-align: left;
+}
+
+.monaco-action-bar.vertical .action-item {
+  display: block;
+}
+
+.monaco-action-bar.vertical .action-label.separator {
+  border-bottom: 1px solid #bbb;
+  margin-left: .8em;
+  margin-right: .8em;
+  padding-top: 1px;
+  display: block;
+}
+
+.monaco-action-bar .action-item .action-label.separator {
+  cursor: default;
+  background-color: #bbb;
+  width: 1px;
+  min-width: 1px;
+  height: 16px;
+  padding: 0;
+  margin: 5px 4px !important;
+}
+
+.secondary-actions .monaco-action-bar .action-label {
+  margin-left: 6px;
+}
+
+.monaco-action-bar .action-item.select-container {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  min-width: 60px;
+  max-width: 170px;
+  margin-right: 10px;
+  display: flex;
+  overflow: hidden;
+}
+
+.monaco-action-bar .action-item.action-dropdown-item {
+  display: flex;
+}
+
+.monaco-action-bar .action-item.action-dropdown-item > .action-dropdown-item-separator {
+  cursor: default;
+  align-items: center;
+  display: flex;
+}
+
+.monaco-action-bar .action-item.action-dropdown-item > .action-dropdown-item-separator > div {
+  width: 1px;
+}
+
+/*# sourceMappingURL=dd92d_modules_monaco-editor_esm_vs_base_browser_ui_actionbar_actionbar_css_f9ee138c._.single.css.map*/

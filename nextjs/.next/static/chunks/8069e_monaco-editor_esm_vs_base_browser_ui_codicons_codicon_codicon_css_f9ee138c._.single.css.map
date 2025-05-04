@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.css"],"sourcesContent":["/*---------------------------------------------------------------------------------------------\n *  Copyright (c) Microsoft Corporation. All rights reserved.\n *  Licensed under the MIT License. See License.txt in the project root for license information.\n *--------------------------------------------------------------------------------------------*/\n\n@font-face {\n\tfont-family: \"codicon\";\n\tfont-display: block;\n\tsrc: url(./codicon.ttf) format(\"truetype\");\n}\n\n.codicon[class*='codicon-'] {\n\tfont: normal normal normal 16px/1 codicon;\n\tdisplay: inline-block;\n\ttext-decoration: none;\n\ttext-rendering: auto;\n\ttext-align: center;\n\ttext-transform: none;\n\t-webkit-font-smoothing: antialiased;\n\t-moz-osx-font-smoothing: grayscale;\n\tuser-select: none;\n\t-webkit-user-select: none;\n}\n\n/* icon rules are dynamically created by the platform theme service (see iconsStyleSheet.ts) */\n"],"names":[],"mappings":"AAKA;;;;;;AAMA","ignoreList":[0]}}]
+}

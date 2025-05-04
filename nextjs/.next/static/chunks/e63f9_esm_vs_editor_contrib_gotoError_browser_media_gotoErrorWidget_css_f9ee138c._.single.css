@@ -1,0 +1,69 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/gotoError/browser/media/gotoErrorWidget.css [app-client] (css) */
+.monaco-editor .peekview-widget .head .peekview-title .severity-icon {
+  vertical-align: text-top;
+  margin-right: 4px;
+  display: inline-block;
+}
+
+.monaco-editor .marker-widget {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monaco-editor .marker-widget > .stale {
+  opacity: .6;
+  font-style: italic;
+}
+
+.monaco-editor .marker-widget .title {
+  padding-right: 5px;
+  display: inline-block;
+}
+
+.monaco-editor .marker-widget .descriptioncontainer {
+  white-space: pre;
+  -webkit-user-select: text;
+  user-select: text;
+  padding: 8px 12px 0 20px;
+  position: absolute;
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .message {
+  flex-direction: column;
+  display: flex;
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .message .details {
+  padding-left: 6px;
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .message .source, .monaco-editor .marker-widget .descriptioncontainer .message span.code {
+  opacity: .6;
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .message a.code-link {
+  opacity: .6;
+  color: inherit;
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .message a.code-link:before {
+  content: "(";
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .message a.code-link:after {
+  content: ")";
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .message a.code-link > span {
+  text-underline-position: under;
+  color: var(--vscode-textLink-activeForeground);
+  border-bottom: 1px solid #0000;
+  text-decoration: underline;
+}
+
+.monaco-editor .marker-widget .descriptioncontainer .filename {
+  cursor: pointer;
+  color: var(--vscode-textLink-activeForeground);
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_gotoError_browser_media_gotoErrorWidget_css_f9ee138c._.single.css.map*/

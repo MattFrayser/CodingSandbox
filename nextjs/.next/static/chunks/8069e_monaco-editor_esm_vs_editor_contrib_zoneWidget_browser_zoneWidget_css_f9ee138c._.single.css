@@ -1,0 +1,15 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/zoneWidget/browser/zoneWidget.css [app-client] (css) */
+.monaco-editor .zone-widget {
+  z-index: 10;
+  position: absolute;
+}
+
+.monaco-editor .zone-widget .zone-widget-container {
+  border-top-style: solid;
+  border-top-width: 0;
+  border-bottom-style: solid;
+  border-bottom-width: 0;
+  position: relative;
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_editor_contrib_zoneWidget_browser_zoneWidget_css_f9ee138c._.single.css.map*/

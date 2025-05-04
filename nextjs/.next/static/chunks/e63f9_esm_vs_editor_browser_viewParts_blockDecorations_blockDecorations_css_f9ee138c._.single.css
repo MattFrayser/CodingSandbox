@@ -1,0 +1,13 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/blockDecorations/blockDecorations.css [app-client] (css) */
+.monaco-editor .blockDecorations-container {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+}
+
+.monaco-editor .blockDecorations-block {
+  box-sizing: border-box;
+  position: absolute;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_browser_viewParts_blockDecorations_blockDecorations_css_f9ee138c._.single.css.map*/

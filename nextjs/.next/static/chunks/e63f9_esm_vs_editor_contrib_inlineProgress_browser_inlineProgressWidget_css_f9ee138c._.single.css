@@ -1,0 +1,28 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/contrib/inlineProgress/browser/inlineProgressWidget.css [app-client] (css) */
+.inline-editor-progress-decoration {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+}
+
+.inline-progress-widget {
+  justify-content: center;
+  align-items: center;
+  display: flex !important;
+}
+
+.inline-progress-widget .icon {
+  font-size: 80% !important;
+}
+
+.inline-progress-widget:hover .icon {
+  animation: none;
+  font-size: 90% !important;
+}
+
+.inline-progress-widget:hover .icon:before {
+  content: var(--vscode-icon-x-content);
+  font-family: var(--vscode-icon-x-font-family);
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_contrib_inlineProgress_browser_inlineProgressWidget_css_f9ee138c._.single.css.map*/

@@ -1,0 +1,30 @@
+/* [project]/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBox.css [app-client] (css) */
+.monaco-select-box {
+  cursor: pointer;
+  border-radius: 2px;
+  width: 100%;
+}
+
+.monaco-select-box-dropdown-container {
+  text-transform: none;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.monaco-action-bar .action-item.select-container {
+  cursor: default;
+}
+
+.monaco-action-bar .action-item .monaco-select-box {
+  cursor: pointer;
+  min-width: 100px;
+  min-height: 18px;
+  padding: 2px 23px 2px 8px;
+}
+
+.mac .monaco-action-bar .action-item .monaco-select-box {
+  border-radius: 5px;
+  font-size: 11px;
+}
+
+/*# sourceMappingURL=dd92d_modules_monaco-editor_esm_vs_base_browser_ui_selectBox_selectBox_css_f9ee138c._.single.css.map*/

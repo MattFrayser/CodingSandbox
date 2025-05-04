@@ -1,0 +1,69 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/accessibleDiffViewer.css [app-client] (css) */
+.monaco-component.diff-review {
+  -webkit-user-select: none;
+  user-select: none;
+  z-index: 99;
+}
+
+.monaco-diff-editor .diff-review {
+  position: absolute;
+}
+
+.monaco-component.diff-review .diff-review-line-number {
+  text-align: right;
+  color: var(--vscode-editorLineNumber-foreground);
+  display: inline-block;
+}
+
+.monaco-component.diff-review .diff-review-summary {
+  padding-left: 10px;
+}
+
+.monaco-component.diff-review .diff-review-shadow {
+  box-shadow: var(--vscode-scrollbar-shadow) 0 -6px 6px -6px inset;
+  position: absolute;
+}
+
+.monaco-component.diff-review .diff-review-row {
+  white-space: pre;
+}
+
+.monaco-component.diff-review .diff-review-table {
+  min-width: 100%;
+  display: table;
+}
+
+.monaco-component.diff-review .diff-review-row {
+  width: 100%;
+  display: table-row;
+}
+
+.monaco-component.diff-review .diff-review-spacer {
+  vertical-align: middle;
+  width: 10px;
+  display: inline-block;
+}
+
+.monaco-component.diff-review .diff-review-spacer > .codicon {
+  font-size: 9px !important;
+}
+
+.monaco-component.diff-review .diff-review-actions {
+  z-index: 100;
+  display: inline-block;
+  position: absolute;
+  top: 2px;
+  right: 10px;
+}
+
+.monaco-component.diff-review .diff-review-actions .action-label {
+  width: 16px;
+  height: 16px;
+  margin: 2px 0;
+}
+
+.monaco-component.diff-review .revertButton {
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=971d5_editor_browser_widget_diffEditor_components_accessibleDiffViewer_css_f9ee138c._.single.css.map*/

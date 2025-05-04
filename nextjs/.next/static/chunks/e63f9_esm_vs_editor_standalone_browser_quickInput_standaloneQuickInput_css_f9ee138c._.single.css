@@ -1,0 +1,56 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInput.css [app-client] (css) */
+.quick-input-widget {
+  font-size: 13px;
+}
+
+.quick-input-widget .monaco-highlighted-label .highlight, .quick-input-widget .monaco-highlighted-label .highlight {
+  color: #0066bf;
+}
+
+.vs .quick-input-widget .monaco-list-row.focused .monaco-highlighted-label .highlight, .vs .quick-input-widget .monaco-list-row.focused .monaco-highlighted-label .highlight {
+  color: #9dddff;
+}
+
+.vs-dark .quick-input-widget .monaco-highlighted-label .highlight, .vs-dark .quick-input-widget .monaco-highlighted-label .highlight {
+  color: #0097fb;
+}
+
+.hc-black .quick-input-widget .monaco-highlighted-label .highlight, .hc-black .quick-input-widget .monaco-highlighted-label .highlight {
+  color: #f38518;
+}
+
+.hc-light .quick-input-widget .monaco-highlighted-label .highlight, .hc-light .quick-input-widget .monaco-highlighted-label .highlight {
+  color: #0f4a85;
+}
+
+.monaco-keybinding > .monaco-keybinding-key {
+  color: #555;
+  background-color: #ddd6;
+  border: 1px solid #ccc6;
+  border-bottom-color: #bbb6;
+  box-shadow: inset 0 -1px #bbb6;
+}
+
+.hc-black .monaco-keybinding > .monaco-keybinding-key {
+  box-shadow: none;
+  color: #fff;
+  background-color: #0000;
+  border: 1px solid #6fc3df;
+}
+
+.hc-light .monaco-keybinding > .monaco-keybinding-key {
+  box-shadow: none;
+  color: #292929;
+  background-color: #0000;
+  border: 1px solid #0f4a85;
+}
+
+.vs-dark .monaco-keybinding > .monaco-keybinding-key {
+  color: #ccc;
+  background-color: #8080802b;
+  border: 1px solid #3339;
+  border-bottom-color: #4449;
+  box-shadow: inset 0 -1px #4449;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_standalone_browser_quickInput_standaloneQuickInput_css_f9ee138c._.single.css.map*/

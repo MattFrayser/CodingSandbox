@@ -1,0 +1,8 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.css [app-client] (css) */
+.monaco-editor .view-ruler {
+  box-shadow: 1px 0 0 0 var(--vscode-editorRuler-foreground) inset;
+  position: absolute;
+  top: 0;
+}
+
+/*# sourceMappingURL=8069e_monaco-editor_esm_vs_editor_browser_viewParts_rulers_rulers_css_f9ee138c._.single.css.map*/

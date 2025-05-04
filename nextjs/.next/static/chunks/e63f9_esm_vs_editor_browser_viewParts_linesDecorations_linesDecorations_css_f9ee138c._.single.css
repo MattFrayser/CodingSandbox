@@ -1,0 +1,13 @@
+/* [project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/linesDecorations/linesDecorations.css [app-client] (css) */
+.monaco-editor .lines-decorations {
+  background: #fff;
+  position: absolute;
+  top: 0;
+}
+
+.monaco-editor .margin-view-overlays .cldr {
+  height: 100%;
+  position: absolute;
+}
+
+/*# sourceMappingURL=e63f9_esm_vs_editor_browser_viewParts_linesDecorations_linesDecorations_css_f9ee138c._.single.css.map*/
