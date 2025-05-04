@@ -95,7 +95,7 @@ build_language() {
 }
 
 # Build all language rootfs
-languages=("java")
+languages=("go")
 
 for lang in "${languages[@]}"; do
     build_language "$lang"

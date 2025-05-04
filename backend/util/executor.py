@@ -191,7 +191,8 @@ def execute_code(code: str, language: Language, filename: str) -> Tuple[str, str
         api = FirecrackerAPI(socket_path)
         
         # Configure boot args to start the agent
-        boot_args = "console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rw init=/usr/local/bin/agent"
+        # In executor.py, make sure the boot args are:
+        boot_args = "console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rw init=/init"
 
         if not api.configure_vm(KERNEL_PATH, boot_args, rootfs_path):
             return "", "Failed to configure VM"
