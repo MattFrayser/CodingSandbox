@@ -4,7 +4,7 @@
 set -e
 
 # Configuration
-AGENT_PATH="../agent/target/release/vsock-agent"
+AGENT_PATH="../agent/agent"
 OUTPUT_DIR="/var/lib/firecracker/rootfs"
 WORK_DIR="$(pwd)"
 
@@ -95,7 +95,7 @@ build_language() {
 }
 
 # Build all language rootfs
-languages=("go")
+languages=("python")
 
 for lang in "${languages[@]}"; do
     build_language "$lang"
