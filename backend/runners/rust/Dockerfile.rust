@@ -1,9 +1,0 @@
-FROM firecracker-base
-
-RUN apk add --no-cache \
-    rust \
-    cargo
-
-# Test Rust installation
-RUN rustc --version
-RUN cargo --version
