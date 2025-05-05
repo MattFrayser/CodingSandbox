@@ -1,9 +1,15 @@
-FROM firecracker-base
+FROM golang:1.19-alpine
 
-RUN apk add --no-cache \
-    nodejs \
-    npm
+WORKDIR /app
 
-# Test Node.js installation
-RUN node --version
-RUN npm --version
+# Install Python
+RUN apk add --no-cache python3 py3-pip
+
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY worker.py sandbox.py ./
+
+# Run worker process
+CMD ["python3", "worker.py"]

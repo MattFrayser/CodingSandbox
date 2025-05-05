@@ -4,9 +4,8 @@ import tempfile
 import resource
 import signal
 import time
-from typing import Dict, Any
 
-def execute_python_code(code: str, filename: str) -> Dict[str, Any]:
+def execute_python_code(code: str, filename: str):
     # Create temporary directory with restricted permissions
     with tempfile.TemporaryDirectory() as tmpdir:
         file_path = os.path.join(tmpdir, filename)
