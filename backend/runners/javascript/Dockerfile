@@ -12,4 +12,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY worker.py sandbox.py ./
 
 # Run worker process
-CMD ["python3", "worker.py"]
+CMD ["python3", "worker.py"]u
