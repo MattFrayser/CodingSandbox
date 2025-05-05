@@ -1,20 +1,18 @@
-# fly.toml app configuration file generated for cod-runner-python on 2025-05-05T13:09:51-04:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
-app = 'cod-runner-python'
+app = 'codr-python-runner'
 primary_region = 'iad'
 
 [build]
   dockerfile = 'Dockerfile'
 
-[http_service]
-  internal_port = 8000
-  force_https = true
-  auto_stop_machines = 'stop'
-  auto_start_machines = true
-  min_machines_running = 0
+[env]
+  REDIS_HOST = "factual-tuna-22307.upstash.io"
+  REDIS_PORT = "6379"
+  REDIS_PASS = "AVcjAAIjcDE1N2NkNWJiOTYyNzE0ZGZjOGNkZDYwNGI1ZTRmYTFiOXAxMA"
+  ORIGINS = "https://localhost"
+
+# Keep worker running
+min_machines_running = 1
+auto_start_machines = true
 
 [[vm]]
   memory = '256mb'

@@ -1,12 +1,17 @@
 from fastapi import APIRouter, HTTPException
-import httpx
+from pydantic import BaseModel
 import os
 import uuid
-from pydantic import BaseModel
-from enum import Enum
 import re
+from models.schema import Language, SUPPORTED_LANGUAGES, BLOCKED_KEYWORDS, BLOCKED_PATTERNS
+from shared.redis_config import redis_conn
 
 router = APIRouter(prefix="/api")
+
+class CodeSubmission(BaseModel):
+    code: str
+    language: str
+    filename: str
 
 # check for dangerous keywords asscoiates with that language
 def check_keywords(code:str, language: str):

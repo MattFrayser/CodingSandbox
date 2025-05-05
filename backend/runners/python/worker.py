@@ -4,7 +4,24 @@ import json
 import os
 import time
 from sandbox import execute_python_code
-from shared.redis_config import redis_conn
+
+def get_redis_connection():
+    try:
+        return redis.Redis(
+            host=os.getenv("REDIS_HOST"),
+            port=int(os.getenv("REDIS_PORT")),
+            password=os.getenv("REDIS_PASS"),
+            decode_responses=True,
+            ssl=True,
+            ssl_cert_reqs=None,
+            ssl_check_hostname=False  # Add this line
+        )
+    except Exception as e:
+        print(f"Redis connection error: {e}")
+        raise
+
+# Use it when needed
+redis_conn = get_redis_connection()
 
 def process_job(job_id):
     # Get job details
