@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from models.schema import *
-from worker.tasks import run_code_job
+import httpx
+import os
+import uuid
+from pydantic import BaseModel
+from enum import Enum
 import re
-from redis_config import job_queue 
 
 router = APIRouter(prefix="/api")
 
@@ -47,15 +49,29 @@ def execute(request: CodeSubmission):
     if request.language not in SUPPORTED_LANGUAGES:
         raise HTTPException(status_code=400, detail="Language not supported")
 
-    # Saftey check for code
-    norm_code = normalize_code(request.code, request.language)
-    check_keywords(norm_code , request.language)
-    check_patterns(norm_code)
+    check_keywords(request.code, request.language)
+    check_patterns(request.code)
+    normalize_code(request.code, request.language)
 
-    # Queue job
-    job = job_queue.enqueue(run_code_job, request.code, request.language, request.filename)
+    job_id = str(uuid.uuid4())
+    
+    # Prepare job data
+    job_data = {
+        "id": job_id,
+        "code": request.code,
+        "language": request.language,
+        "filename": request.filename,
+        "status": "queued"
+    }
 
+    # Store job data
+    redis_conn.hmset(f"job:{job_id}", job_data)
+    redis_conn.expire(f"job:{job_id}", 3600)  # 1 hour TTL
+    
+    # Add to language-specific queue
+    redis_conn.lpush(f"queue:{request.language}", job_id)
+    
     return {
-        "job_id": job.get_id(), 
+        "job_id": job_id,
         "message": "Job queued"
     }

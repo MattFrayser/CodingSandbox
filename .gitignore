@@ -51,6 +51,8 @@ firecracker-agent
 __pycache__
 tests/
 /backend/release-v1.11.0-x86_64
+/backend/release-v1.4.0-x86_64
+firecracker-v1.4.0-x86_64.tgz
 
 # Images
 *.ext4
@@ -64,3 +66,7 @@ local_runner.sh
 output.txt
 venv
 .venv
+.agent
+Cargo.lock
+firecracker.tar.gz
+agenti

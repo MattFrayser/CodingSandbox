@@ -10,7 +10,7 @@ load_dotenv()
 
 app = FastAPI()
 
-origins = os.getenv("ORIGINS", "").split(",")
+origins = os.getenv("ORIGINS").split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,3 +26,7 @@ from api.result import router as result_router
 
 app.include_router(submit_router)
 app.include_router(result_router)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}

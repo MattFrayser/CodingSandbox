@@ -1,7 +1,0 @@
-# languages/Dockerfile.python
-FROM firecracker-base
-
-# No additional packages needed, as python is already installed in the base image
-
-# Test Python installation
-RUN python3 --version
