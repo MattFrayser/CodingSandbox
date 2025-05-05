@@ -1,8 +1,29 @@
-FROM firecracker-base
+FROM debian:bullseye-slim
 
-RUN apk add --no-cache \
+# Install dependencies
+RUN apt-get update && apt-get install -y \
     python3 \
-    py3-pip
+    python3-pip \
+    curl \
+    build-essential \
+    ca-certificates \
+    libssl-dev \
+    pkg-config \
+    git \
+    && apt-get clean
 
-# Test Python installation
-RUN python3 --version
+# Install Rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Copy agent source and build
+WORKDIR /agent
+COPY . /agent
+RUN cargo build --release
+RUN cp target/release/code_agent /usr/local/bin/code_agent
+
+# Set up init
+RUN echo '#!/bin/sh\n/usr/local/bin/code_agent' > /init && chmod +x /init
+
+# Final command to make this the init process in the Firecracker VM
+ENTRYPOINT ["/init"]
