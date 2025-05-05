@@ -1,9 +1,7 @@
+# languages/Dockerfile.python
 FROM firecracker-base
 
-# Install Python
-RUN apk add --no-cache \
-    python3 \
-    py3-pip
+# No additional packages needed, as python is already installed in the base image
 
-# Test binary compatibility 
-RUN file /usr/local/bin/agent || echo "File command not available"
+# Test Python installation
+RUN python3 --version
