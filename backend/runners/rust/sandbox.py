@@ -1,6 +1,7 @@
 import subprocess
 import os
 import tempfile
+from shared_utils.firejail import firejail_execute
 
 def execute_code(code: str, filename: str):
     with tempfile.TemporaryDirectory() as tmpdir:

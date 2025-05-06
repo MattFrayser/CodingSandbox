@@ -4,6 +4,7 @@ import tempfile
 import resource
 import signal
 import time
+from shared_utils.firejail import firejail_execute
 
 def execute_python_code(code: str, filename: str):
     # Create temporary directory with restricted permissions

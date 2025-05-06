@@ -2,6 +2,7 @@ import subprocess
 import os
 import tempfile
 import resource
+from shared_utils.firejail import firejail_execute
 
 def execute_code(code: str, filename: str):
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -36,7 +37,7 @@ def execute_code(code: str, filename: str):
             
             # Run executable in Firejail
             return firejail_execute([output_path], tmpdir)
-            
+
         except subprocess.TimeoutExpired:
             return {
                 "success": False,
