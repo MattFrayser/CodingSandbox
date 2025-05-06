@@ -17,10 +17,9 @@ def execute_code(code: str, filename: str):
             # Compile Java code
             compile_result = subprocess.run(
                 ["javac", file_path],
-                cwd=tmpdir,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=5
             )
             
             if compile_result.returncode != 0:
@@ -31,21 +30,14 @@ def execute_code(code: str, filename: str):
                     "exit_code": compile_result.returncode
                 }
             
-            # Run the compiled Java class
-            run_result = subprocess.run(
-                ["java", "-Xmx256m", "-Djava.security.manager", class_name],
-                cwd=tmpdir,
-                capture_output=True,
-                text=True,
-                timeout=15
-            )
+            # Set executable permissions
+            os.chmod(output_path, 0o755)
             
-            return {
-                "success": run_result.returncode == 0,
-                "stdout": run_result.stdout,
-                "stderr": run_result.stderr,
-                "exit_code": run_result.returncode
-            }
+            # Import firejail utility
+            from util.firejail_utils import firejail_execute
+            
+            # Run executable in Firejail
+            return firejail_execute([output_path], tmpdir)
             
         except subprocess.TimeoutExpired:
             return {

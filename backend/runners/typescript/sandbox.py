@@ -8,28 +8,7 @@ def execute_code(code: str, filename: str):
         
         with open(file_path, 'w') as f:
             f.write(code)
-        
-        try:
-            # Customize command based on language
-            cmd = ["ts-node", file_path]  # For TypeScript
-            
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            
-            return {
-                "success": result.returncode == 0,
-                "stdout": result.stdout,
-                "stderr": result.stderr,
-                "exit_code": result.returncode
-            }
-        except subprocess.TimeoutExpired:
-            return {
-                "success": False,
-                "stdout": "",
-                "stderr": "Execution timed out",
-                "exit_code": -1
-            }
+
+        from util.firejail_utils import firejail_execute
+                
+        return firejail_execute(["ts-node", file_path], tmpdir)

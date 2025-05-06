@@ -4,13 +4,6 @@ primary_region = 'iad'
 [build]
   dockerfile = 'Dockerfile'
 
-[env]
-  REDIS_HOST = "factual-tuna-22307.upstash.io"
-  REDIS_PORT = "6379"
-  REDIS_PASS = "AVcjAAIjcDE1N2NkNWJiOTYyNzE0ZGZjOGNkZDYwNGI1ZTRmYTFiOXAxMA"
-  ORIGINS = "https://localhost"
-  LANGUAGE = "typescript"
-
 # Keep worker running
 min_machines_running = 1
 auto_start_machines = true
