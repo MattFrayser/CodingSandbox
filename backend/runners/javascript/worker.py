@@ -27,8 +27,6 @@ def create_redis_connection():
         ssl_ca_certs=os.getenv("REDIS_CA_CERT_PATH", None)
     )
 
-redis_conn = create_redis_connection()
-
 def process_job(job_id):
     job = redis_conn.hgetall(f"job:{job_id}")
     
@@ -46,7 +44,7 @@ def worker_loop():
     print("Worker started")
     
     while True:
-        job_id = redis_conn.brpop("queue:javascript", timeout=1)  # Change per language
+        job_id = redis_conn.brpop("queue:javascript", timeout=1)
         
         if job_id:
             process_job(job_id[1])
@@ -54,4 +52,5 @@ def worker_loop():
         time.sleep(0.1)
 
 if __name__ == "__main__":
+    redis_conn = create_redis_connection()
     worker_loop()

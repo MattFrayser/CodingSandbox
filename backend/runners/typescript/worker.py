@@ -27,8 +27,6 @@ def create_redis_connection():
         ssl_ca_certs=os.getenv("REDIS_CA_CERT_PATH", None)
     )
 
-redis_conn = create_redis_connection()
-
 
 def process_job(job_id):
     job = redis_conn.hgetall(f"job:{job_id}")
@@ -55,4 +53,5 @@ def worker_loop():
         time.sleep(0.1)
 
 if __name__ == "__main__":
+    redis_conn = create_redis_connection()
     worker_loop()

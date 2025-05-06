@@ -2,7 +2,7 @@ import subprocess
 import os
 import tempfile
 import re
-from shared_utils.firejail import firejail_execute
+from firejail import firejail_execute
 
 def execute_code(code: str, filename: str):
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -31,11 +31,6 @@ def execute_code(code: str, filename: str):
                     "exit_code": compile_result.returncode
                 }
             
-            
-            # Import firejail utility
-            from util.firejail_utils import firejail_execute
-            
-            # Run executable in Firejail
             return firejail_execute([file_path], tmpdir)
             
         except subprocess.TimeoutExpired:

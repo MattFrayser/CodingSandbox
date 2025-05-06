@@ -2,7 +2,7 @@ import subprocess
 import os
 import tempfile
 import resource
-from shared_utils.firejail import firejail_execute
+from firejail import firejail_execute
 
 def execute_code(code: str, filename: str):
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -31,9 +31,6 @@ def execute_code(code: str, filename: str):
             
             # Set executable permissions
             os.chmod(output_path, 0o755)
-            
-             # Import firejail utility
-            from util.firejail_utils import firejail_execute
             
             # Run executable in Firejail
             return firejail_execute([output_path], tmpdir)
