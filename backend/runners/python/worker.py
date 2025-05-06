@@ -5,23 +5,30 @@ import os
 import time
 from sandbox import execute_python_code
 
-def get_redis_connection():
-    try:
-        return redis.Redis(
-            host=os.getenv("REDIS_HOST"),
-            port=int(os.getenv("REDIS_PORT")),
-            password=os.getenv("REDIS_PASS"),
-            decode_responses=True,
-            ssl=True,
-            ssl_cert_reqs=None,
-            ssl_check_hostname=False  # Add this line
-        )
-    except Exception as e:
-        print(f"Redis connection error: {e}")
-        raise
+def create_redis_connection():
+    # Create default SSL context with certificate verification
+    ssl_context = ssl.create_default_context()
+    
+    # Only disable hostname checking if explicitly configured
+    if os.getenv("REDIS_SKIP_HOSTNAME_CHECK", "False").lower() == "true":
+        ssl_context.check_hostname = False
+    
+    # Only disable certificate verification if explicitly configured
+    if os.getenv("REDIS_SKIP_CERT_VERIFY", "False").lower() == "true":
+        ssl_context.verify_mode = ssl.CERT_NONE
+    
+    return Redis(
+        host=os.getenv("REDIS_HOST"),
+        port=int(os.getenv("REDIS_PORT")),
+        password=os.getenv("REDIS_PASS"),
+        decode_responses=True,
+        ssl=True,
+        ssl_cert_reqs=None if os.getenv("REDIS_SKIP_CERT_VERIFY", "False").lower() == "true" else ssl.CERT_REQUIRED,
+        ssl_ca_certs=os.getenv("REDIS_CA_CERT_PATH", None)
+    )
 
-# Use it when needed
-redis_conn = get_redis_connection()
+redis_conn = create_redis_connection()
+
 
 def process_job(job_id):
     # Get job details

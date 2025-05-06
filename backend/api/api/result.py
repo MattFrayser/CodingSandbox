@@ -1,6 +1,6 @@
 # api/result.py
 from fastapi import APIRouter, HTTPException
-from shared.redis_config import redis_conn
+from redis.config import redis_conn
 
 router = APIRouter(prefix="/api")
 

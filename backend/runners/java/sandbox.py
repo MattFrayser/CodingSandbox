@@ -37,7 +37,7 @@ def execute_code(code: str, filename: str):
             from util.firejail_utils import firejail_execute
             
             # Run executable in Firejail
-            return firejail_execute([output_path], tmpdir)
+            return firejail_execute([file_path], tmpdir)
             
         except subprocess.TimeoutExpired:
             return {

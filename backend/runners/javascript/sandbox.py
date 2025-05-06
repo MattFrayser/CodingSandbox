@@ -12,4 +12,4 @@ def execute_code(code: str, filename: str):
         
         from util.firejail_utils import firejail_execute
 
-        return firejail_execute(["python3", file_path], tmpdir) 
+        return firejail_execute(["node", file_path], tmpdir) 
