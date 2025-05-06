@@ -3,6 +3,7 @@ import json
 import os
 import time
 from sandbox import execute_code
+import ssl
 
 def create_redis_connection():
     # Create default SSL context with certificate verification

@@ -30,8 +30,6 @@ def execute_code(code: str, filename: str):
                     "exit_code": compile_result.returncode
                 }
             
-            # Set executable permissions
-            os.chmod(output_path, 0o755)
             
             # Import firejail utility
             from util.firejail_utils import firejail_execute

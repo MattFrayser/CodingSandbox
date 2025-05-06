@@ -4,8 +4,8 @@ import os
 import uuid
 import re
 from models.schema import Language, SUPPORTED_LANGUAGES, BLOCKED_KEYWORDS, BLOCKED_PATTERNS
-from shared.redis_config import redis_conn
-import Depends
+from redis.config import redis_conn
+from fastapi import Depends
 import time
 
 router = APIRouter(prefix="/api")
