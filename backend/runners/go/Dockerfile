@@ -3,7 +3,7 @@ FROM golang:1.19-alpine
 WORKDIR /app
 
 # Install dependencies and firejail
-RUN apk add update && apk add install -y firejail && apt-get clean
+RUN apk add update && apk add install -y firejail && apk add clean
 
 # Copy shared utilities
 COPY shared_utils/ /app/shared_utils/
