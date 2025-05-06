@@ -49,14 +49,23 @@ def normalize_code(code: str, language:str):
     return code
 
 @router.post("/submit_code")
-def execute(request: CodeSubmission):
-    # catch if lanuage is nto found
+async def execute(request: CodeSubmission, api_key: str = Depends(verify_api_key)):
+    # Additional validation
+    if len(request.code) > 10000:  # Limit code size
+        raise HTTPException(status_code=400, detail="Code too large")
+        
+    # More input sanitation
+    if not re.match(r'^[a-zA-Z0-9_.-]+$', request.filename):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+        
+    # Check if language is supported
     if request.language not in SUPPORTED_LANGUAGES:
         raise HTTPException(status_code=400, detail="Language not supported")
 
-    check_keywords(request.code, request.language)
-    check_patterns(request.code)
-    normalize_code(request.code, request.language)
+    # Normalize and security check
+    normalized_code = normalize_code(request.code, request.language)
+    check_keywords(normalized_code, request.language)
+    check_patterns(normalized_code)
 
     job_id = str(uuid.uuid4())
     
@@ -66,7 +75,8 @@ def execute(request: CodeSubmission):
         "code": request.code,
         "language": request.language,
         "filename": request.filename,
-        "status": "queued"
+        "status": "queued",
+        "created_at": time.time()  # Add timestamp
     }
 
     # Store job data

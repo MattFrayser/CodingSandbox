@@ -5,6 +5,7 @@ from rq import Queue
 from dotenv import load_dotenv
 import os
 import ssl
+import time
 
 load_dotenv()
 
@@ -20,6 +21,11 @@ app.add_middleware(
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type"],
 )
+
+
+from middleware.auth import require_api_key, verify_api_key
+from middleware.security import add_security_middleware
+add_security_middleware(app)
 
 # Rate limiting
 request_counts = {}

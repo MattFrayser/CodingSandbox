@@ -2,6 +2,9 @@ FROM golang:1.19-alpine
 
 WORKDIR /app
 
+# Install dependencies and firejail
+RUN apt-get update && apt-get install -y firejail && apt-get clean
+
 # Install Python
 RUN apk add --no-cache python3 py3-pip
 

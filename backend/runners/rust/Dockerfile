@@ -2,6 +2,9 @@ FROM rust:slim
 
 WORKDIR /app
 
+# Install dependencies and firejail
+RUN apt-get update && apt-get install -y firejail && apt-get clean
+
 # Install Python
 RUN apt-get update && apt-get install -y \
     python3 \

@@ -13,18 +13,16 @@ def execute_code(code: str, filename: str):
             # Run Go code
             run_result = subprocess.run(
                 ["go", "run", file_path],
-                cwd=tmpdir,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=5
             )
             
-            return {
-                "success": run_result.returncode == 0,
-                "stdout": run_result.stdout,
-                "stderr": run_result.stderr,
-                "exit_code": run_result.returncode
-            }
+            # Import firejail utility
+            from util.firejail_utils import firejail_execute
+            
+            # Run executable in Firejail
+            return firejail_execute([file_path], tmpdir)
             
         except subprocess.TimeoutExpired:
             return {

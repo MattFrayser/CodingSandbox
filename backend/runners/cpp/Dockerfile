@@ -2,6 +2,9 @@ FROM gcc:latest
 
 WORKDIR /app
 
+# Install dependencies and firejail
+RUN apt-get update && apt-get install -y firejail && apt-get clean
+
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     python3 \
