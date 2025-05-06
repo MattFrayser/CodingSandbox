@@ -1,3 +1,5 @@
+import requests
+
 # New execute function in executor.py
 def execute_code(code, language, filename):
     language_service = f"https://codr-{language}-runner.fly.dev/execute"

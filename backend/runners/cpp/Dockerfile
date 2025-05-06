@@ -2,12 +2,11 @@ FROM gcc:latest
 
 WORKDIR /app
 
-# Install dependencies and firejail
-RUN apt-get update && apt-get install -y firejail && apt-get clean
-
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+    firejail \
+    clean \
     python3 \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*

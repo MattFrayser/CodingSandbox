@@ -4,11 +4,20 @@ import tempfile
 import resource
 import signal
 import time
-from irejail import firejail_execute
+from firejail import firejail_execute
 
 def execute_python_code(code: str, filename: str):
     # Create temporary directory with restricted permissions
     with tempfile.TemporaryDirectory() as tmpdir:
+
+        if not re.match(r'^[a-zA-Z0-9_.-]+$', filename):
+            return {
+                "success": False,
+                "stdout": "",
+                "stderr": "Invalid filename",
+                "exit_code": 1
+            }
+            
         file_path = os.path.join(tmpdir, filename)
         
         # Write code to file

@@ -6,6 +6,14 @@ from firejail import firejail_execute
 
 def execute_code(code: str, filename: str):
     with tempfile.TemporaryDirectory() as tmpdir:
+        if not re.match(r'^[a-zA-Z0-9_.-]+$', filename):
+            return {
+                "success": False,
+                "stdout": "",
+                "stderr": "Invalid filename",
+                "exit_code": 1
+            }
+            
         file_path = os.path.join(tmpdir, filename)
         output_path = os.path.join(tmpdir, "a.out")
         
@@ -31,9 +39,6 @@ def execute_code(code: str, filename: str):
             
             # Set executable permissions
             os.chmod(output_path, 0o755)
-            
-            # Import firejail utility
-            from util.firejail_utils import firejail_execute
             
             # Run executable in Firejail
             return firejail_execute([output_path], tmpdir)

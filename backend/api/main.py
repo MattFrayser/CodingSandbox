@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import os
 import ssl
 import time
+from middleware.auth import require_api_key, verify_api_key
+from middleware.security import add_security_middleware
 
 load_dotenv()
 
@@ -22,9 +24,6 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
-
-from middleware.auth import require_api_key, verify_api_key
-from middleware.security import add_security_middleware
 add_security_middleware(app)
 
 # Rate limiting
