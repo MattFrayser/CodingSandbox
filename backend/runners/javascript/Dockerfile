@@ -4,13 +4,7 @@ FROM node:16-alpine
 WORKDIR /app
 
 # Install dependencies and firejail
-RUN apk add update && apk add install -y firejail && apk add clean
-
-# Copy shared utilities
-COPY shared_utils/ /app/shared_utils/
-
-# Install shared utilities
-RUN pip install -e /app/shared_utils/
+RUN apk add --no-cache firejail python3 py3-pip
 
 # Install dependencies
 RUN apk add --no-cache python3 py3-pip

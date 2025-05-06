@@ -11,11 +11,6 @@ RUN apt-get update && apt-get install -y \
 #  Install firejail
 RUN apt-get update && apt-get install -y firejail && apt-get clean
 
-# Copy shared utilities
-COPY shared_utils/ /app/shared_utils/
-
-# Install shared utilities
-RUN pip install -e /app/shared_utils/
 
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt

@@ -5,11 +5,6 @@ WORKDIR /app
 # Install dependencies and firejail
 RUN apt-get update && apt-get install -y firejail && apt-get clean
 
-# Copy shared utilities
-COPY shared_utils/ /app/shared_utils/
-
-# Install shared utilities
-RUN pip install -e /app/shared_utils/
 
 # Install dependencies
 COPY requirements.txt .
