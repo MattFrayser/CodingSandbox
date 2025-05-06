@@ -55,3 +55,8 @@ from api.result import router as result_router
 
 app.include_router(submit_router)
 app.include_router(result_router)
+
+@app.get("/health")
+@require_api_key
+async def health_check(request: Request):
+    return {"status": "ok"}

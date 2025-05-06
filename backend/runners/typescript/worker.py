@@ -46,13 +46,26 @@ def worker_loop():
     print("Worker started")
     
     while True:
-        job_id = redis_conn.brpop("queue:typescript", timeout=1)
-        
-        if job_id:
-            process_job(job_id[1])
-        
-        time.sleep(0.1)
-
-if __name__ == "__main__":
-    redis_conn = create_redis_connection()
-    worker_loop()
+        try:
+            # Get job from queue
+            job_id = redis_conn.brpop("queue:typescript", timeout=1)
+            
+            if job_id:
+                try:
+                    job_id = job_id[1]  # brpop returns (queue, item)
+                    print(f"Processing job: {job_id}")
+                    process_job(job_id)
+                except Exception as e:
+                    print(f"Error processing job {job_id}: {str(e)}")
+                    # Mark job as failed
+                    try:
+                        redis_conn.hset(f"job:{job_id}", "status", "failed")
+                        redis_conn.hset(f"job:{job_id}", "error", str(e))
+                    except Exception as redis_err:
+                        print(f"Failed to update job status: {str(redis_err)}")
+            
+            time.sleep(0.1)
+            
+        except Exception as e:
+            print(f"Worker loop error: {str(e)}")
+            time.sleep(1)  
