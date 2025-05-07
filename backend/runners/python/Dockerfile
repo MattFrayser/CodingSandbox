@@ -1,17 +1,9 @@
-FROM python:3.11-slim
+FROM registry.fly.io/codr-base:latest
 
 WORKDIR /app
 
-# Install dependencies and firejail
-RUN apt-get update && apt-get install -y firejail && apt-get clean
+# No downloads needed since base runs python
 
+COPY worker.py sandbox.py .
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application
-COPY worker.py sandbox.py ./
-
-# Run worker process
 CMD ["python", "worker.py"]

@@ -1,17 +1,9 @@
-# backend/runners/javascript/Dockerfile
-FROM node:16-alpine
+FROM registry.fly.io/codr-base:latest
 
 WORKDIR /app
 
-# Install dependencies and firejail
-RUN apk add --no-cache firejail python3 py3-pip
+RUN apt-get update && apt-get install -y node:16-alpine && apt-get clean
 
+COPY worker.py sandbox.py .
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# Copy application
-COPY worker.py sandbox.py ./
-
-# Run worker process
-CMD ["python3", "worker.py"]u
+CMD ["python", "worker.py"]

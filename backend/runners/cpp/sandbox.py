@@ -53,6 +53,7 @@ def execute_code(code: str, filename: str):
                     "exit_code": compile_result.returncode
                 }
             
+            # Set executable permissions & Run
             os.chmod(output_path, 0o755)
             return firejail_execute([output_path], tmpdir)
 

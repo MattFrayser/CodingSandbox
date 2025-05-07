@@ -7,7 +7,7 @@ import time
 from firejail import firejail_execute
 import re
 
-def execute_python_code(code: str, filename: str):
+def execute_code(code: str, filename: str):
     # Create temporary directory with restricted permissions
     with tempfile.TemporaryDirectory() as tmpdir:
 

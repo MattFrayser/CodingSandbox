@@ -1,12 +1,13 @@
+# fly.toml app configuration file generated for codr-rust-runner on 2025-05-07T13:52:49-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = 'codr-rust-runner'
 primary_region = 'iad'
 
 [build]
   dockerfile = 'Dockerfile'
-
-# Keep worker running
-min_machines_running = 1
-auto_start_machines = true
 
 [[vm]]
   memory = '512mb'

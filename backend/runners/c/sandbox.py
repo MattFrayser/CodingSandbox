@@ -39,10 +39,8 @@ def execute_code(code: str, filename: str):
                     "exit_code": compile_result.returncode
                 }
             
-            # Set executable permissions
+            # Set executable permissions & Run
             os.chmod(output_path, 0o755)
-            
-            # Run executable in Firejail
             return firejail_execute([output_path], tmpdir)
             
         except subprocess.TimeoutExpired:

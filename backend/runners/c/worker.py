@@ -1,26 +1,24 @@
 import os
 import time
+import redis
+import ssl
+import re
 from sandbox import execute_code
 from process import process_job
 from connect import create_redis_connection
-import redis
-import ssl
-
-
 
 def worker_loop():
     print("Worker started")    
     try:
         while True:
             try:
-                # Log each loop iteration
-                print("Polling for jobs...")
+
                 job_id = redis_conn.brpop("queue:c", timeout=5)
                 
                 if job_id:
                     job_id = job_id[1]
                     print(f"Processing job: {job_id}")
-                    process_job(job_id)
+                    process_job(job_id, redis_conn, execute_code, "c")
             except redis.RedisError as e:
                 print(f"Redis error: {e}")
                 time.sleep(2)

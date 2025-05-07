@@ -1,6 +1,7 @@
 import requests
 import time
 import json
+import os
 
 # API endpoint
 API_URL = "https://codr-api.fly.dev/api/submit_code"
@@ -23,6 +24,11 @@ int main() {
 }
 """
 
+headers = {
+    "X-API-Key": "9cb00bcc2d5fa7e2d5dc93c1db5b74c6",
+    "Content-Type": "application/json"
+}
+
 # Submit code
 response = requests.post(
    API_URL,
@@ -30,7 +36,8 @@ response = requests.post(
        "code": c_code,
        "language": "c",
        "filename": "test.c"
-   }
+   },
+   headers=headers
 )
 
 print("Status code:", response.status_code)
@@ -41,8 +48,8 @@ if job_id:
    # Poll for results
    result_url = f"https://codr-api.fly.dev/api/get_result/{job_id}"
    
-   for _ in range(10):  # Try for 10 seconds
-       time.sleep(1)
+   for _ in range(3):  # Try for 10 seconds
+       time.sleep(3)
        result_response = requests.get(result_url)
        result_data = result_response.json()
        

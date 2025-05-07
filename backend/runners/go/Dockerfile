@@ -2,15 +2,9 @@ FROM golang:1.19-alpine
 
 WORKDIR /app
 
-# Install dependencies and firejail
-RUN apk add --no-cache firejail python3 py3-pip
+RUN apt-get update && apt-get install -y golang:1.19-alpine && apt-get clean
 
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+COPY worker.py sandbox.py .
 
-# Copy application
-COPY worker.py sandbox.py ./
-
-# Run worker process
-CMD ["python3", "worker.py"]
+CMD ["python", "worker.py"]
