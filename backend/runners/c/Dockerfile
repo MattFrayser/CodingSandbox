@@ -1,15 +1,12 @@
-FROM gcc:latest
+# backend/runners/c/Dockerfile
+FROM registry.fly.io/codr-base:latest
 
 WORKDIR /app
 
-# Install dependencies
-RUN apt-get update && apt-get install -y firejail python3 python3-pip && apt-get clean
+# Install C-specific dependencies
+RUN apt-get update && apt-get install -y gcc && apt-get clean
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# Copy application
+# Copy C-specific files
 COPY worker.py sandbox.py ./
 
-# Run worker process
-CMD ["python3", "worker.py"]
+CMD ["python", "worker.py"]

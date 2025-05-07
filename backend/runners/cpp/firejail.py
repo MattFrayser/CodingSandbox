@@ -4,6 +4,8 @@ import tempfile
 
 def firejail_execute(cmd, tmpdir, timeout=10):
     """Execute a command in a Firejail sandbox with security restrictions"""
+    profile_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sandbox.profile")
+    
     firejail_cmd = [
         "firejail",
         "--profile=sandbox.profile",
@@ -16,7 +18,6 @@ def firejail_execute(cmd, tmpdir, timeout=10):
         "--rlimit-cpu=5",       # 5 second CPU limit
         "--rlimit-fsize=1000000", # 1MB file size limit
         "--timeout=00:00:{:02d}".format(timeout),
-        "--seccomp",            # Enable seccomp filtering
     ] + cmd
     
     try:

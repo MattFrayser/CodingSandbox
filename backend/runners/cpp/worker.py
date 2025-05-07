@@ -8,35 +8,33 @@ import redis
 
 def create_redis_connection():
     try:
-        # Create default SSL context with certificate verification
-        ssl_context = ssl.create_default_context()
         
-        # Only disable hostname checking if explicitly configured
-        if os.getenv("REDIS_SKIP_HOSTNAME_CHECK", "False").lower() == "true":
-            ssl_context.check_hostname = False
-        
-        # Only disable certificate verification if explicitly configured
-        if os.getenv("REDIS_SKIP_CERT_VERIFY", "False").lower() == "true":
-            ssl_context.verify_mode = ssl.CERT_NONE
-        
-        return redis.Redis(
+        # Create Redis connection with current recommended parameters
+        conn = redis.Redis(
             host=os.getenv("REDIS_HOST"),
             port=int(os.getenv("REDIS_PORT", "6379")),
             password=os.getenv("REDIS_PASS"),
             decode_responses=True,
-            ssl=True,
-            ssl_cert_reqs=None if os.getenv("REDIS_SKIP_CERT_VERIFY", "False").lower() == "true" else ssl.CERT_REQUIRED,
-            ssl_ca_certs=os.getenv("REDIS_CA_CERT_PATH", None)
+            ssl=os.getenv("REDIS_SSL", "True").lower() == "true",
+            socket_timeout=5,
+            socket_connect_timeout=5,
+            health_check_interval=15
         )
+            
+            # Test connection
+        conn.ping()
+        print(f"Successfully connected to Redis")
+        return conn
     except Exception as e:
-        print(f"Redis connection error: {str(e)}")
-        # Don't silently fail - either retry or exit
+        print(f"Redis connection attempt failed: {str(e)}")
         raise
+
 
 def process_job(job_id):
     if not job_id or not isinstance(job_id, str) or not re.match(r'^[a-zA-Z0-9\-]+$', job_id):
         print(f"Invalid job_id: {job_id}")
         return False
+
     job = redis_conn.hgetall(f"job:{job_id}")
     
     if not job or job.get("language") != "cpp":

@@ -5,6 +5,7 @@ import time
 from sandbox import execute_code
 import ssl
 import redis
+import re
 
 def create_redis_connection():
     try:
@@ -37,7 +38,7 @@ def process_job(job_id):
     if not job_id or not isinstance(job_id, str) or not re.match(r'^[a-zA-Z0-9\-]+$', job_id):
         print(f"Invalid job_id: {job_id}")
         return False
-        
+
     job = redis_conn.hgetall(f"job:{job_id}")
     
     if not job or job.get("language") != "javascript":  # Change per language

@@ -2,6 +2,7 @@ import subprocess
 import os
 import tempfile
 from firejail import firejail_execute
+import re
 
 def execute_code(code: str, filename: str):
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -12,7 +13,7 @@ def execute_code(code: str, filename: str):
                 "stderr": "Invalid filename",
                 "exit_code": 1
             }
-            
+
         file_path = os.path.join(tmpdir, filename)
 
         

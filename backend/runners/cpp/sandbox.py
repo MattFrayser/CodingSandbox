@@ -3,10 +3,11 @@ import os
 import tempfile
 import resource
 from firejail import firejail_execute
+import re
 
 def execute_code(code: str, filename: str):
     with tempfile.TemporaryDirectory() as tmpdir:
-        
+
         if not re.match(r'^[a-zA-Z0-9_.-]+$', filename):
             return {
                 "success": False,
@@ -21,10 +22,24 @@ def execute_code(code: str, filename: str):
         with open(file_path, 'w') as f:
             f.write(code)
         
+        if filename.endswith('.cpp'):
+            compile_cmd = [
+                "g++", 
+                file_path, 
+                "-o", 
+                output_path, 
+                "-std=c++11", 
+                "-lstdc++"
+            ]
+        else:
+            compile_cmd = ["gcc", file_path, "-o", output_path]
+            
+        if compiler == "g++":
+            compile_cmd.insert(1, "-std=c++11")
+        
         try:
-            # Compile C++ code
             compile_result = subprocess.run(
-                ["g++", file_path, "-o", output_path],
+                compile_cmd,
                 capture_output=True,
                 text=True,
                 timeout=5
@@ -38,10 +53,7 @@ def execute_code(code: str, filename: str):
                     "exit_code": compile_result.returncode
                 }
             
-            # Set executable permissions
             os.chmod(output_path, 0o755)
-            
-            # Run executable in Firejail
             return firejail_execute([output_path], tmpdir)
 
         except subprocess.TimeoutExpired:
