@@ -1,4 +1,4 @@
-FROM gcc:latest
+FROM registry.fly.io/codr-base:latest
 
 WORKDIR /app
 
