@@ -29,7 +29,7 @@ def execute_code(code: str, filename: str):
                 ["rustc", file_path, "-o", output_path],
                 capture_output=True,
                 text=True,
-                timeout=5
+                timeout=15
             )
             
             if compile_result.returncode != 0:

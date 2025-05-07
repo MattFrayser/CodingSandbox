@@ -13,12 +13,12 @@ def worker_loop():
     while True:
         try:
             # Get job from queue ( brpop returns (queue, item) )
-            job_id = redis_conn.brpop("queue:cpp", timeout=1)
+            job_id = redis_conn.brpop("queue:cpp", timeout=5)
             
             if job_id:
                 job_id = job_id[1]
                 print(f"Processing job: {job_id}")
-                process_job(job_id, redis_conn, execute_code, "c")
+                process_job(job_id, redis_conn, execute_code, "cpp")
 
         except redis.RedisError as e:
             print(f"Redis error: {e}")

@@ -41,7 +41,7 @@ def execute_code(code: str, filename: str):
                     "exit_code": compile_result.returncode
                 }
             
-            return firejail_execute([file_path], tmpdir)
+            return firejail_execute(["java", "-cp", tmpdir, class_name], tmpdir)
             
         except subprocess.TimeoutExpired:
             return {

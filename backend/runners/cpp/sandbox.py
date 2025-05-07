@@ -22,21 +22,17 @@ def execute_code(code: str, filename: str):
         with open(file_path, 'w') as f:
             f.write(code)
         
-        if filename.endswith('.cpp'):
-            compile_cmd = [
-                "g++", 
+
+        compile_cmd = [
+                "g++",
+                "-std=c++11",
                 file_path, 
                 "-o", 
                 output_path, 
                 "-std=c++11", 
                 "-lstdc++"
-            ]
-        else:
-            compile_cmd = ["gcc", file_path, "-o", output_path]
-            
-        if compiler == "g++":
-            compile_cmd.insert(1, "-std=c++11")
-        
+        ]
+
         try:
             compile_result = subprocess.run(
                 compile_cmd,
