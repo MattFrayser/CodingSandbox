@@ -29,7 +29,6 @@ def execute_code(code: str, filename: str):
                 file_path, 
                 "-o", 
                 output_path, 
-                "-std=c++11", 
                 "-lstdc++"
         ]
 
