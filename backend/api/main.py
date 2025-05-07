@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from redis import Redis 
+from connect.config import redis_conn
 from rq import Queue
 from dotenv import load_dotenv
 import os
