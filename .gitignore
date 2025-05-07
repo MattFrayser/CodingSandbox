@@ -70,3 +70,5 @@ venv
 Cargo.lock
 firecracker.tar.gz
 agenti
+
+fly.toml
