@@ -3,10 +3,13 @@ from pydantic import BaseModel
 import os
 import uuid
 import re
-from models.schema import Language, SUPPORTED_LANGUAGES, BLOCKED_KEYWORDS, BLOCKED_PATTERNS
-from redis.config import redis_conn
 from fastapi import Depends
 import time
+
+from models.schema import Language, SUPPORTED_LANGUAGES, BLOCKED_KEYWORDS, BLOCKED_PATTERNS
+from connect.config import redis_conn
+from middleware.auth import verify_api_key
+
 
 router = APIRouter(prefix="/api")
 
@@ -36,17 +39,19 @@ def check_patterns(code: str):
 # Remove comments and strings (this makes it easier to check for malicious code)
 def normalize_code(code: str, language:str):
     
+ # Handle different language comment styles
     if language in ["python"]:
-        # Remove Python-style comments
         code = re.sub(r'#.*$', '', code, flags=re.MULTILINE)
+        code = re.sub(r'""".*?"""', '', code, flags=re.DOTALL)
+        code = re.sub(r"'''.*?'''", '', code, flags=re.DOTALL)
     elif language in ["javascript", "typescript", "java", "cpp", "c", "go"]:
-        # Remove single-line comments
         code = re.sub(r'//.*$', '', code, flags=re.MULTILINE)
-        # Remove multi-line comments
-        code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)
+        code = re.sub(r'/\*[\s\S]*?\*/', '', code, flags=re.DOTALL)
     
-    # Remove string literals
-    code = re.sub(r'(["\'])(?:(?=(\\?))\2.)*?\1', '""', code)
+    # Better string literal removal - handle different quote styles
+    code = re.sub(r'"(?:\\.|[^"\\])*"', '""', code)  # Double quotes
+    code = re.sub(r"'(?:\\.|[^'\\])*'", "''", code)  # Single quotes
+    code = re.sub(r"`(?:\\.|[^`\\])*`", "``", code)  # Template literals
     
     return code
 
@@ -87,6 +92,7 @@ async def execute(request: CodeSubmission, api_key: str = Depends(verify_api_key
     
     # Add to language-specific queue
     redis_conn.lpush(f"queue:{request.language}", job_id)
+    print(f"Pushed job {job_id} to queue:{request.language}")
     
     return {
         "job_id": job_id,

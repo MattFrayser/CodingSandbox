@@ -1,11 +1,12 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from connect.config import redis_conn
 from rq import Queue
 from dotenv import load_dotenv
 import os
 import ssl
 import time
+
+from connect.config import redis_conn
 from middleware.auth import require_api_key, verify_api_key
 from middleware.security import add_security_middleware
 
@@ -21,7 +22,7 @@ app.add_middleware(
     allow_origins=[origin.strip() for origin in origins if origin.strip()],
     allow_credentials=True,
     allow_methods=["POST", "GET"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "X-API-KEY"],
 )
 
 add_security_middleware(app)
@@ -31,21 +32,28 @@ request_counts = {}
 
 @app.middleware("http")
 async def rate_limit(request: Request, call_next):
-    ip = request.client.host
-    minute = int(time.time() / 60)
-    key = f"ratelimit:{ip}:{minute}"
-    
-    # Increment counter and set expiry
-    current = redis_conn.incr(key)
-    if current == 1:
-        # Set 2-minute expiry for cleanup
-        redis_conn.expire(key, 120)
-    
-    # Check if rate limit exceeded (5/min)
-    if current > 5:
-        raise HTTPException(status_code=429, detail="Rate limit exceeded")
-    
-    return await call_next(request)
+    try:
+        ip = request.client.host
+        minute = int(time.time() / 60)
+        key = f"ratelimit:{ip}:{minute}"
+        
+        # Increment counter and set expiry
+        current = redis_conn.incr(key)
+        if current == 1:
+            # Set 2-minute expiry for cleanup
+            redis_conn.expire(key, 120)
+        
+        # Check if rate limit exceeded (5/min)
+        if current > 5:
+            raise HTTPException(status_code=429, detail="Rate limit exceeded")
+        
+        return await call_next(request)
+    except Exception as e:
+        print(f"Rate limiting error: {str(e)}")
+        return await call_next(request)
+
+
+job_queue = Queue(connection=redis_conn)
 
 
 # Import routers after creating app

@@ -8,7 +8,7 @@ API_KEY_HEADER = APIKeyHeader(name="X-API-Key")
 
 
 async def verify_api_key(api_key: str = Depends(API_KEY_HEADER)):
-    if not hmac.compare_digest(api_key, os.getenv("API_KEY")):
+    if not hmac.compare_digest(api_key, os.getenv("API_KEY", "")):
         raise HTTPException(status_code=403, detail="Invalid API key")
     return api_key
 
@@ -26,8 +26,7 @@ def require_api_key(func):
             raise HTTPException(status_code=500, detail="Request object not found")
         
         api_key = request.headers.get("X-API-Key")
-        if not api_key or not hmac.compare_digest(api_key, os.getenv("API_KEY")):
-            raise HTTPException(status_code=403, detail="Invalid API key")
+        await verify_api_key(api_key)
         
         return await func(*args, **kwargs)
     
