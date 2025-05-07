@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.css"],"sourcesContent":["/*---------------------------------------------------------------------------------------------\n *  Copyright (c) Microsoft Corporation. All rights reserved.\n *  Licensed under the MIT License. See License.txt in the project root for license information.\n *--------------------------------------------------------------------------------------------*/\n\n.monaco-editor .view-ruler {\n\tposition: absolute;\n\ttop: 0;\n\tbox-shadow: 1px 0 0 0 var(--vscode-editorRuler-foreground) inset;\n}\n"],"names":[],"mappings":"AAKA","ignoreList":[0]}}]
-}
