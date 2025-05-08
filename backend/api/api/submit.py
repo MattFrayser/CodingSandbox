@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import Request, APIRouter, HTTPException
 from pydantic import BaseModel
 import os
 import uuid
@@ -8,7 +8,7 @@ import time
 
 from models.schema import Language, SUPPORTED_LANGUAGES, BLOCKED_KEYWORDS, BLOCKED_PATTERNS
 from connect.config import redis_conn
-from middleware.auth import verify_api_key
+from middleware.auth import require_api_key, verify_api_key
 
 
 router = APIRouter(prefix="/api")
@@ -56,22 +56,23 @@ def normalize_code(code: str, language:str):
     return code
 
 @router.post("/submit_code")
-async def execute(request: CodeSubmission, api_key: str = Depends(verify_api_key)):
+@require_api_key
+async def execute(submission: CodeSubmission, request: Request):  # Rename for clarity
     # Additional validation
-    if len(request.code) > 10000:  # Limit code size
+    if len(submission.code) > 10000:  # Limit code size
         raise HTTPException(status_code=400, detail="Code too large")
         
     # More input sanitation
-    if not re.match(r'^[a-zA-Z0-9_.-]+$', request.filename):
+    if not re.match(r'^[a-zA-Z0-9_.-]+$', submission.filename):
         raise HTTPException(status_code=400, detail="Invalid filename")
         
     # Check if language is supported
-    if request.language not in SUPPORTED_LANGUAGES:
+    if submission.language not in SUPPORTED_LANGUAGES:
         raise HTTPException(status_code=400, detail="Language not supported")
 
     # Normalize and security check
-    normalized_code = normalize_code(request.code, request.language)
-    check_keywords(normalized_code, request.language)
+    normalized_code = normalize_code(submission.code, submission.language)
+    check_keywords(normalized_code, submission.language)
     check_patterns(normalized_code)
 
     job_id = str(uuid.uuid4())
@@ -79,12 +80,13 @@ async def execute(request: CodeSubmission, api_key: str = Depends(verify_api_key
     # Prepare job data
     job_data = {
         "id": job_id,
-        "code": request.code,
-        "language": request.language,
-        "filename": request.filename,
+        "code": submission.code,
+        "language": submission.language,
+        "filename": submission.filename,
         "status": "queued",
         "created_at": time.time()  # Add timestamp
     }
+
 
     # Store job data
     redis_conn.hmset(f"job:{job_id}", job_data)

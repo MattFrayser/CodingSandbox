@@ -7,7 +7,11 @@ import hmac
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key")
 
 
-async def verify_api_key(api_key: str = Depends(API_KEY_HEADER)):
+async def verify_api_key(api_key: str = Depends(API_KEY_HEADER), request: Request = None):
+
+    if request and request.method == "OPTIONS":
+        return ""
+
     if not hmac.compare_digest(api_key, os.getenv("API_KEY", "")):
         raise HTTPException(status_code=403, detail="Invalid API key")
     return api_key

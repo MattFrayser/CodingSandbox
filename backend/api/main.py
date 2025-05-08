@@ -14,12 +14,9 @@ load_dotenv()
 
 app = FastAPI()
 
-origins = os.getenv("ORIGINS").split(",")
-
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in origins if origin.strip()],
+    allow_origins=os.getenv("ORIGINS"),
     allow_credentials=True,
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["Content-Type", "X-API-KEY"],
@@ -32,6 +29,10 @@ request_counts = {}
 
 @app.middleware("http")
 async def rate_limit(request: Request, call_next):
+
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
     try:
         ip = request.client.host
         minute = int(time.time() / 60)
