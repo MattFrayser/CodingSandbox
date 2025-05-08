@@ -2,7 +2,7 @@ import subprocess
 import os
 import tempfile
 
-def firejail_execute(cmd, tmpdir, timeout=10):
+def firejail_execute(cmd, tmpdir, timeout=10, memory_limit=100000000):
     """Execute a command in a Firejail sandbox with security restrictions"""
     profile_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sandbox.profile")
 
@@ -14,7 +14,7 @@ def firejail_execute(cmd, tmpdir, timeout=10):
         "--net=none",           # No network access
         "--nodbus",             # No D-Bus
         "--noroot",             # No root privileges
-        "--rlimit-as=100000000", # 100MB memory limit
+        "--rlimit-as=" + str(memory_limit), # 100MB memory limit
         "--rlimit-cpu=5",       # 5 second CPU limit
         "--rlimit-fsize=1000000", # 1MB file size limit
         "--timeout=00:00:{:02d}".format(timeout),

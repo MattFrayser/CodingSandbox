@@ -2,7 +2,7 @@ FROM registry.fly.io/codr-base:latest
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y gcc && apt-get clean
+RUN apt-get update && apt-get install -y g++ && apt-get clean
 
 COPY worker.py sandbox.py .
 
