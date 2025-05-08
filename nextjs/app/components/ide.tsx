@@ -8,18 +8,16 @@ import { MdOutlineFileDownload } from "react-icons/md";
 
 interface JobResult {
   status: string;
-  result?: [string, string]; // [stdout, stderr]
+  result: string;
 }
+
 
 // Define the supported languages based on the backend
 const SUPPORTED_LANGUAGES = [
   { value: "python", label: "Python" },
   { value: "javascript", label: "JavaScript" },
-  { value: "typescript", label: "TypeScript" },
-  { value: "java", label: "Java" },
   { value: "cpp", label: "C++" },
   { value: "c", label: "C" },
-  { value: "go", label: "Go" },
   { value: "rust", label: "Rust" }
 ]
 
@@ -27,11 +25,8 @@ const SUPPORTED_LANGUAGES = [
 const defaultCode = {
   "python": '# Write your Python code here\nprint("Hello, World!")',
   "javascript": '// Write your JavaScript code here\nconsole.log("Hello, World!");',
-  "typescript": '// Write your TypeScript code here\nconst greeting: string = "Hello, World!";\nconsole.log(greeting);',
-  "java": '// Write your Java code here\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
   "cpp": '#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
   "c": '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
-  "go": 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}',
   "rust": 'fn main() {\n    println!("Hello, World!");\n}'
 };
 
@@ -93,71 +88,91 @@ const execute = async (code: string, language: string) => {
     }
 };
 
-  // Poll for if job is finished
-const pollJobStatus = async (job_id: string) => {
-    const maxAttempts = 10;
-    let attempts = 0;
-    let lastStatus = '';
-    
-    while (attempts < maxAttempts) {
-      try {
-        const result: JobResult = await actions.getJob(job_id);
-        
-        // Only update output if status changed
-        if (result.status !== lastStatus) {
-          switch (result.status) {
-            case 'finished':
-              const [stdout, stderr] = result.result || ['', ''];
-              setOutput(prev => [
-                ...prev.filter(msg => !msg.startsWith('Job ')),
-                ...(stdout.trim() ? [`Output: ${stdout}`] : []),
-                ...(stderr.trim() ? [`Error: ${stderr}`] : [])
-              ]);
-              return;
+ // Poll for job status
+ const pollJobStatus = async (job_id: string) => {
+  const maxAttempts = 10;
+  let attempts = 0;
+  let lastStatus = '';
+  
+  while (attempts < maxAttempts) {
+    try {
+      const response = await actions.getJob(job_id);
+      console.log("Job response:", response); // Debug log
+      
+      // Only update output if status changed
+      if (response.status !== lastStatus) {
+        switch (response.status) {
+          case 'completed':
+            try {
+              // Parse the result JSON string into an object
+              const resultObj = JSON.parse(response.result);
+              console.log("Parsed result:", resultObj); // Debug log
               
-            case 'failed':
               setOutput(prev => [
                 ...prev.filter(msg => !msg.startsWith('Job ')),
-                "Job failed"
+                ...(resultObj.stdout ? [`Output: ${resultObj.stdout}`] : []),
+                ...(resultObj.stderr ? [`Error: ${resultObj.stderr}`] : [])
               ]);
-              return;
-              
-            case 'queued':
-            case 'started':
+            } catch (parseErr) {
+              console.error("Failed to parse result:", parseErr, response.result);
               setOutput(prev => [
                 ...prev.filter(msg => !msg.startsWith('Job ')),
-                `Job ${result.status}...`
+                "Error parsing result",
+                `Raw result: ${response.result}`
               ]);
-              break;
-              
-            default:
-              setOutput(prev => [
-                ...prev.filter(msg => !msg.startsWith('Job ')),
-                `Unknown status: ${result.status}`
-              ]);
-              return;
-          }
-          lastStatus = result.status;
+            }
+            return;
+            
+          case 'failed':
+            setOutput(prev => [
+              ...prev.filter(msg => !msg.startsWith('Job ')),
+              "Job failed"
+            ]);
+            return;
+            
+          case 'queued':
+          case 'processing':
+            setOutput(prev => [
+              ...prev.filter(msg => !msg.startsWith('Job ')),
+              `Job ${response.status}...`
+            ]);
+            break;
+            
+          default:
+            setOutput(prev => [
+              ...prev.filter(msg => !msg.startsWith('Job ')),
+              `Job status: ${response.status}`
+            ]);
         }
-        
+        lastStatus = response.status;
+      }
+      
+      // If job is still in progress, wait and try again
+      if (response.status === 'queued' || response.status === 'processing') {
         await new Promise(resolve => setTimeout(resolve, 1000));
         attempts++;
-        
-      } catch (err: any) {
-        setOutput(prev => [
-          ...prev.filter(msg => !msg.startsWith('Job ')),
-          "Polling error",
-          err.message
-        ]);
+      } else {
+        // Job is finished one way or another
         return;
       }
+      
+    } catch (err: any) {
+      console.error("Poll error:", err);
+      setOutput(prev => [
+        ...prev.filter(msg => !msg.startsWith('Job ')),
+        "Polling error",
+        err.message || String(err)
+      ]);
+      return;
     }
-    
-    setOutput(prev => [
-      ...prev.filter(msg => !msg.startsWith('Job ')),
-      "Execution timed out"
-    ]);
-}
+  }
+  
+  setOutput(prev => [
+    ...prev.filter(msg => !msg.startsWith('Job ')),
+    "Execution timed out"
+  ]);
+};
+
   // Function to handle file download
 const handleDownload = () => {
     const blob = new Blob([code], { type: 'text/plain' });
@@ -179,11 +194,8 @@ const handleRestart = () => {
     const fileExtensions: {[key: string]: string} = {
       "python": ".py",
       "javascript": ".js",
-      "typescript": ".ts",
-      "java": ".java",
       "cpp": ".cpp",
       "c": ".c",
-      "go": ".go",
       "rust": ".rs"
     };
   
@@ -204,11 +216,8 @@ const handleLanguageChange = (langValue: string) => {
     const fileExtensions: {[key: string]: string} = {
       "python": ".py",
       "javascript": ".js",
-      "typescript": ".ts",
-      "java": ".java",
       "cpp": ".cpp",
       "c": ".c",
-      "go": ".go",
       "rust": ".rs"
     };
   
