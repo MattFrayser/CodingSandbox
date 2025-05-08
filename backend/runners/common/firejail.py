@@ -11,12 +11,12 @@ def firejail_execute(cmd, tmpdir, timeout=10):
         "--profile=/etc/firejail/sandbox.profile",
         "--private=" + tmpdir,
         "--quiet",
-        "--net=none",           # No network access
-        "--nodbus",             # No D-Bus
-        "--noroot",             # No root privileges
-        "--rlimit-as=100000000", # 100MB memory limit
-        "--rlimit-cpu=5",       # 5 second CPU limit
-        "--rlimit-fsize=1000000", # 1MB file size limit
+        "--net=none",                           # No network access
+        "--nodbus",                             # No D-Bus
+        "--noroot",                             # No root privileges
+        "--rlimit-as=100000000",                # 100MB memory limit
+        "--rlimit-cpu=5",                       # 5 second CPU limit
+        "--rlimit-fsize=1000000",               # 1MB file size limit
         "--timeout=00:00:{:02d}".format(timeout),
     ] + cmd
     
