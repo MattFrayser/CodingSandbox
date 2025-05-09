@@ -5,12 +5,10 @@ from dotenv import load_dotenv
 import os
 import ssl
 import time
-import asyncio
 
 from connect.config import redis_conn
 from middleware.auth import require_api_key, verify_api_key
 from middleware.security import add_security_middleware
-from api.socketio import setup_socketio
 
 load_dotenv()
 
@@ -23,7 +21,6 @@ app.add_middleware(
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["Content-Type", "X-API-KEY"],
 )
-
 
 add_security_middleware(app)
 
@@ -63,17 +60,9 @@ job_queue = Queue(connection=redis_conn)
 # Import routers after creating app
 from api.submit import router as submit_router
 from api.result import router as result_router
-from api.auth import router as auth_router
-
 
 app.include_router(submit_router)
 app.include_router(result_router)
-app.include_router(auth_router)
-
-app.on_event("startup")
-async def startup_event():
-     asyncio.create_task(cleanup_task())
-     setup_socketio(app)  # Add this line
 
 @app.get("/health")
 @require_api_key
