@@ -90,44 +90,61 @@ const execute = async (code: string, language: string) => {
 
  // Poll for job status
  const pollJobStatus = async (job_id: string) => {
-  const maxAttempts = 10;
+  const maxAttempts = 20;
   let attempts = 0;
   let lastStatus = '';
+  let backoffTime = 1000; // Start with 1 second
+  
+  // interface for cache entries
+  interface CacheEntry {
+    status: string;
+    result: string;
+  }
+  
+  // Local cache
+  const resultCache: Record<string, CacheEntry> = {};
   
   while (attempts < maxAttempts) {
     try {
-      const response = await actions.getJob(job_id);
-      console.log("Job response:", response); // Debug log
+      // Check local cache first
+      if (resultCache[job_id] && 
+          ["completed", "failed"].includes(resultCache[job_id].status)) {
+        return;
+      }
       
+      const response = await actions.getJob(job_id);
+      
+      // Cache the result
+      resultCache[job_id] = response;
       // Only update output if status changed
       if (response.status !== lastStatus) {
         switch (response.status) {
           case 'completed':
             try {
-              // Parse the result JSON string into an object
               const resultObj = JSON.parse(response.result);
-              console.log("Parsed result:", resultObj); // Debug log
-              
               setOutput(prev => [
                 ...prev.filter(msg => !msg.startsWith('Job ')),
                 ...(resultObj.stdout ? [`Output: ${resultObj.stdout}`] : []),
                 ...(resultObj.stderr ? [`Error: ${resultObj.stderr}`] : [])
               ]);
+              setIsExecuting(false);
+              return;
             } catch (parseErr) {
-              console.error("Failed to parse result:", parseErr, response.result);
+              console.error("Failed to parse result:", parseErr);
               setOutput(prev => [
                 ...prev.filter(msg => !msg.startsWith('Job ')),
-                "Error parsing result",
-                `Raw result: ${response.result}`
+                "Error parsing result"
               ]);
+              setIsExecuting(false);
+              return;
             }
-            return;
             
           case 'failed':
             setOutput(prev => [
               ...prev.filter(msg => !msg.startsWith('Job ')),
               "Job failed"
             ]);
+            setIsExecuting(false);
             return;
             
           case 'queued':
@@ -137,40 +154,34 @@ const execute = async (code: string, language: string) => {
               `Job ${response.status}...`
             ]);
             break;
-            
-          default:
-            setOutput(prev => [
-              ...prev.filter(msg => !msg.startsWith('Job ')),
-              `Job status: ${response.status}`
-            ]);
         }
         lastStatus = response.status;
       }
       
-      // If job is still in progress, wait and try again
+      // If job is still in progress, wait with increasing backoff
       if (response.status === 'queued' || response.status === 'processing') {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Exponential backoff - increase wait time for each attempt
+        await new Promise(resolve => setTimeout(resolve, backoffTime));
+        backoffTime = Math.min(backoffTime * 1.5, 10000); // Cap at 10 seconds
         attempts++;
       } else {
-        // Job is finished one way or another
+        // Job is finished
         return;
       }
       
-    } catch (err: any) {
+    } catch (err) {
       console.error("Poll error:", err);
       setOutput(prev => [
         ...prev.filter(msg => !msg.startsWith('Job ')),
-        "Polling error",
-        err.message || String(err)
+        "Error checking job status"
       ]);
+      setIsExecuting(false);
       return;
     }
   }
   
-  setOutput(prev => [
-    ...prev.filter(msg => !msg.startsWith('Job ')),
-    "Execution timed out"
-  ]);
+  setIsExecuting(false);
+  setOutput(prev => [...prev, "Job monitoring timed out"]);
 };
 
   // Function to handle file download
