@@ -1,7 +1,7 @@
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
-const WebSocket = require('ws');
+const { Server } = require('socket.io');
 const httpProxy = require('http-proxy');
 const cookie = require('cookie');
 const crypto = require('crypto');
@@ -12,12 +12,12 @@ const port = parseInt(process.env.PORT || '3000', 10);
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
-// API URL for WebSocket proxy
+// API URL 
 const API_URL = process.env.API_URL || 'http://localhost:8000';
 const WS_API_URL = API_URL.replace('http', 'ws');
 
-// Rate limiting for WebSocket connections
-const wsRateLimit = {
+// Rate limiting for Socket.io connections
+const socketRateLimit = {
   windowMs: 60 * 1000, // 1 minute
   maxRequests: 60, // 60 requests per minute
   clients: new Map(), // IP -> { count, resetTime }
@@ -29,16 +29,16 @@ setInterval(() => {
   const now = Date.now();
   
   // Clear expired rate limits
-  wsRateLimit.clients.forEach((data, ip) => {
+  socketRateLimit.clients.forEach((data, ip) => {
     if (now > data.resetTime) {
-      wsRateLimit.clients.delete(ip);
+      socketRateLimit.clients.delete(ip);
     }
   });
   
   // Clear expired bans
-  wsRateLimit.banned.forEach((unbanTime, ip) => {
+  socketRateLimit.banned.forEach((unbanTime, ip) => {
     if (now > unbanTime) {
-      wsRateLimit.banned.delete(ip);
+      socketRateLimit.banned.delete(ip);
     }
   });
 }, 60000);
@@ -48,39 +48,39 @@ function isRateLimited(ip) {
   const now = Date.now();
   
   // Check if banned
-  if (wsRateLimit.banned.has(ip)) {
+  if (socketRateLimit.banned.has(ip)) {
     return true;
   }
   
   // Get client data
-  let clientData = wsRateLimit.clients.get(ip);
+  let clientData = socketRateLimit.clients.get(ip);
   
   if (!clientData) {
     // First request from this IP
     clientData = {
       count: 1,
-      resetTime: now + wsRateLimit.windowMs
+      resetTime: now + socketRateLimit.windowMs
     };
-    wsRateLimit.clients.set(ip, clientData);
+    socketRateLimit.clients.set(ip, clientData);
     return false;
   }
   
   // Reset if window has passed
   if (now > clientData.resetTime) {
     clientData.count = 1;
-    clientData.resetTime = now + wsRateLimit.windowMs;
-    wsRateLimit.clients.set(ip, clientData);
+    clientData.resetTime = now + socketRateLimit.windowMs;
+    socketRateLimit.clients.set(ip, clientData);
     return false;
   }
   
   // Increment count
   clientData.count++;
-  wsRateLimit.clients.set(ip, clientData);
+  socketRateLimit.clients.set(ip, clientData);
   
   // Check if over limit
-  if (clientData.count > wsRateLimit.maxRequests) {
+  if (clientData.count > socketRateLimit.maxRequests) {
     // Ban for 5 minutes
-    wsRateLimit.banned.set(ip, now + 300000);
+    socketRateLimit.banned.set(ip, now + 300000);
     return true;
   }
   
@@ -102,6 +102,30 @@ function secureLog(data) {
   console.log(JSON.stringify(maskedData));
 }
 
+// Verify WebSocket token with backend
+async function verifyToken(token, jobId) {
+  try {
+    // A simple validation here - in production, you might want to 
+    // validate the token with your backend API
+    if (!token) return false;
+    
+    // This is a placeholder - in a real implementation, you'd verify the token
+    // with your backend or decode and verify a JWT
+    return true;
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return false;
+  }
+}
+
+// Create an HTTP proxy to forward REST API requests
+const apiProxy = httpProxy.createProxyServer({
+  target: API_URL,
+  changeOrigin: true,
+  secure: true,
+  xfwd: true
+});
+
 app.prepare().then(() => {
   // Create HTTP server
   const server = createServer(async (req, res) => {
@@ -109,13 +133,21 @@ app.prepare().then(() => {
       // Set security headers
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('X-Frame-Options', 'DENY');
-      res.setHeader('Content-Security-Policy', "default-src 'self'; connect-src 'self' wss:; script-src 'self'");
+      res.setHeader('Content-Security-Policy', "default-src 'self'; connect-src 'self' ws: wss:; script-src 'self'");
       res.setHeader('X-XSS-Protection', '1; mode=block');
       res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
       res.setHeader('Referrer-Policy', 'no-referrer');
       res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
       
       const parsedUrl = parse(req.url, true);
+      
+      // Handle API requests via proxy
+      if (parsedUrl.pathname.startsWith('/api/') && 
+          !parsedUrl.pathname.startsWith('/api/socket.io')) {
+        return apiProxy.web(req, res, { target: API_URL });
+      }
+      
+      // Let Next.js handle everything else
       await handle(req, res, parsedUrl);
     } catch (err) {
       console.error('Error occurred handling', req.url, err);
@@ -124,100 +156,154 @@ app.prepare().then(() => {
     }
   });
 
-  // Create WebSocket proxy server with security options
-  const wsProxy = httpProxy.createProxyServer({
-    target: WS_API_URL,
-    ws: true,
-    changeOrigin: true,
-    // Add additional security options
-    secure: true, // Verify SSL certificates
-    xfwd: true,   // Add x-forwarded headers
-    // Add custom headers if needed
-    headers: {
-      'X-Forwarded-Proto': 'https'
+  // Handle proxy errors
+  apiProxy.on('error', (err, req, res) => {
+    console.error('API proxy error:', err);
+    
+    if (res && res.writeHead) {
+      res.writeHead(502);
+      res.end('API proxy error');
     }
   });
 
-  // Handle WebSocket upgrade securely
-  server.on('upgrade', (req, socket, head) => {
-    const parsedUrl = parse(req.url, true);
-    
-    // Check if this is a WebSocket request for our API
-    if (parsedUrl.pathname.startsWith('/api/ws/')) {
-      // Get client IP (handle proxies)
-      const forwardedFor = req.headers['x-forwarded-for'];
-      const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : req.socket.remoteAddress;
+  // Initialize Socket.io
+  const io = new Server(server, {
+    path: '/socket.io',
+    cors: {
+      origin: process.env.CORS_ORIGIN || '*',
+      methods: ['GET', 'POST']
+    },
+    transports: ['websocket', 'polling']
+  });
+
+  // Socket.io authentication middleware
+  io.use(async (socket, next) => {
+    try {
+      const token = socket.handshake.auth.token;
+      const clientIp = socket.handshake.headers['x-forwarded-for'] || 
+                      socket.conn.remoteAddress;
       
       // Rate limit check
       if (isRateLimited(clientIp)) {
         secureLog({
-          event: 'websocket_rate_limited',
-          ip: clientIp,
-          path: parsedUrl.pathname
+          event: 'socket_rate_limited',
+          ip: clientIp
         });
-        
-        // Close connection with error
-        socket.write('HTTP/1.1 429 Too Many Requests\r\n' +
-                    'Connection: close\r\n\r\n');
-        socket.destroy();
-        return;
+        return next(new Error('Rate limit exceeded'));
       }
       
-      // Log connection attempt (with sensitive data masked)
-      secureLog({
-        event: 'websocket_upgrade',
-        ip: clientIp,
-        path: parsedUrl.pathname,
-        query: parsedUrl.query,
-        headers: {
-          host: req.headers.host,
-          origin: req.headers.origin,
-          'user-agent': req.headers['user-agent']
-        }
-      });
+      // No token provided
+      if (!token) {
+        return next(new Error('Authentication token required'));
+      }
       
-      // Rewrite path from /api/ws/* to /ws/*
-      req.url = req.url.replace('/api/ws/', '/ws/');
+      // Verify token
+      const isValid = await verifyToken(token, socket.handshake.query.jobId);
+      if (!isValid) {
+        return next(new Error('Invalid authentication token'));
+      }
       
-      // Add proxy timeout
-      const proxyTimeout = setTimeout(() => {
-        secureLog({
-          event: 'websocket_proxy_timeout',
-          ip: clientIp,
-          path: parsedUrl.pathname
-        });
-        
-        socket.destroy();
-      }, 10000);
+      // Store client IP and token for later use
+      socket.clientIp = clientIp;
+      socket.token = token;
       
-      // Clear timeout when proxying is done
-      socket.on('close', () => {
-        clearTimeout(proxyTimeout);
-      });
-      
-      // Proxy WebSocket connection
-      wsProxy.ws(req, socket, head);
+      return next();
+    } catch (error) {
+      return next(new Error('Authentication error'));
     }
   });
 
-  // Handle proxy errors
-  wsProxy.on('error', (err, req, res) => {
-    console.error('WebSocket proxy error:', err);
-    
-    const clientIp = req.headers['x-forwarded-for'] || 
-                    (req.socket ? req.socket.remoteAddress : 'unknown');
-    
+  // Handle Socket.io connections
+  io.on('connection', (socket) => {
     secureLog({
-      event: 'websocket_proxy_error',
-      error: err.message,
-      ip: clientIp,
-      path: req ? req.url : 'unknown'
+      event: 'socket_connected',
+      ip: socket.clientIp
     });
     
-    if (res && res.writeHead) {
-      res.writeHead(502);
-      res.end('WebSocket proxy error');
-    }
+    // Handle joining a job room
+    socket.on('join', async (data) => {
+      try {
+        const { jobId } = data;
+        
+        if (!jobId) {
+          socket.emit('error', 'Job ID is required');
+          return;
+        }
+        
+        // Join the room for this job
+        socket.join(`job:${jobId}`);
+        
+        secureLog({
+          event: 'socket_joined_room',
+          ip: socket.clientIp,
+          jobId
+        });
+        
+        // Set up a WebSocket connection to the backend to receive job updates
+        const jobSocket = new WebSocket(`${WS_API_URL}/ws/jobs/${jobId}?token=${socket.token}`);
+        
+        // Store the backend socket connection in the client's socket object
+        socket.backendSocket = jobSocket;
+        
+        // Handle backend WebSocket messages
+        jobSocket.on('message', (message) => {
+          try {
+            const parsedMessage = JSON.parse(message);
+            // Forward message to the client
+            socket.emit('status_update', parsedMessage);
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        });
+        
+        // Handle backend WebSocket errors
+        jobSocket.on('error', (error) => {
+          console.error('Backend WebSocket error:', error);
+          socket.emit('error', 'Backend connection error');
+        });
+        
+        // Handle backend WebSocket close
+        jobSocket.on('close', (code, reason) => {
+          console.log(`Backend WebSocket closed: ${code} ${reason}`);
+          // No need to close the Socket.io connection as the job might be complete
+        });
+        
+        // Fetch initial job status
+        fetch(`${API_URL}/api/get_result/${jobId}`, {
+          headers: {
+            'X-API-KEY': process.env.API_KEY
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          socket.emit('status_update', {
+            job_id: jobId,
+            status: data.status,
+            result: data.result,
+            timestamp: Date.now()
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching initial job status:', error);
+        });
+      } catch (error) {
+        console.error('Error handling join event:', error);
+        socket.emit('error', 'Failed to join job room');
+      }
+    });
+    
+    // Handle client disconnect
+    socket.on('disconnect', () => {
+      secureLog({
+        event: 'socket_disconnected',
+        ip: socket.clientIp
+      });
+      
+      // Close the backend WebSocket connection
+      if (socket.backendSocket) {
+        socket.backendSocket.close();
+      }
+    });
   });
 
   // Start server

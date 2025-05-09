@@ -6,7 +6,7 @@ import * as actions from '../actions';
 import { VscSave, VscDebugRestart , VscShare, VscSettingsGear} from "react-icons/vsc";
 import { MdOutlineFileDownload } from "react-icons/md";
 
-import { webSocket } from '../hooks/webSocket';
+import { useSocketIO } from '../hooks/socketio';
 
 interface JobResult {
   status: string;
@@ -53,10 +53,11 @@ export default function IDE() {
     error, 
     connectionState,
     executionTime 
-  } = webSocket(jobId, {
+  } = useSocketIO(jobId, {
     apiKey: process.env.NEXT_PUBLIC_API_KEY || '',
     reconnectAttempts: 3,
-    pingInterval: 30000
+    reconnectDelay: 2000, 
+    timeout: 30000
   });
 
   useEffect(() => {

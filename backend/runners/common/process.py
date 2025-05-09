@@ -18,6 +18,7 @@ def process_job(job_id, redis_conn, execute_code, language):
     # Helper function to publish status updates
     def publish_update(status, result=None, error=None):
         update = {
+            "type": "status_update",  # Add type for Socket.io
             "job_id": job_id,
             "status": status,
             "timestamp": time.time()
@@ -29,6 +30,7 @@ def process_job(job_id, redis_conn, execute_code, language):
         if error is not None:
             update["error"] = error
             
+        # Publish to Redis channel - this will be picked up by Socket.io
         redis_conn.publish(f"job:{job_id}:updates", json.dumps(update))
     
     try:

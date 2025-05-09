@@ -6,4 +6,6 @@ rq
 pydantic
 requests
 httpx
-websockets
+python-engineio
+python-socketio
+jwt

@@ -6,7 +6,6 @@ import os
 import ssl
 import time
 import asyncio
-from api.websocket import router as websocket_router, start_redis_listener
 
 from connect.config import redis_conn
 from middleware.auth import require_api_key, verify_api_key
@@ -24,21 +23,6 @@ app.add_middleware(
     allow_headers=["Content-Type", "X-API-KEY"],
 )
 
-# Add security headers middleware
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        response = await call_next(request)
-        
-        # Add security headers
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; connect-src 'self' wss:; script-src 'self'"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-        
-        return response
 
 add_security_middleware(app)
 
@@ -81,11 +65,11 @@ from api.result import router as result_router
 
 app.include_router(submit_router)
 app.include_router(result_router)
-app.include_router(websocket_router)
 
-@app.on_event("startup")
+app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(cleanup_task())
+     asyncio.create_task(cleanup_task())
+     setup_socketio(app)  # Add this line
 
 @app.get("/health")
 @require_api_key
