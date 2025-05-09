@@ -93,8 +93,8 @@ async def execute(submission: CodeSubmission, request: Request):  # Rename for c
     redis_conn.expire(f"job:{job_id}", 3600)  # 1 hour TTL
     
     # Add to language-specific queue
-    redis_conn.lpush(f"queue:{request.language}", job_id)
-    print(f"Pushed job {job_id} to queue:{request.language}")
+    redis_conn.lpush(f"queue:{submission.language}", job_id)
+    print(f"Pushed job {job_id} to queue:{submission.language}")
     
     return {
         "job_id": job_id,

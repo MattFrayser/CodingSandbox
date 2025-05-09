@@ -9,6 +9,9 @@ from connect import create_redis_connection
 
 def worker_loop():
     print("Worker started")    
+    last_job_time = time.time()
+    max_idle_time = 60 
+
     try:
         while True:
             try:
@@ -19,6 +22,10 @@ def worker_loop():
                     job_id = job_id[1]
                     print(f"Processing job: {job_id}")
                     process_job(job_id, redis_conn, execute_code, "javascript")
+                elif time.time() - last_job_time > max_idle_time:
+                    print("Idle timeout reached, shutting down")
+                    return
+                    
             except redis.RedisError as e:
                 print(f"Redis error: {e}")
                 time.sleep(2)

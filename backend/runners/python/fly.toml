@@ -5,9 +5,13 @@ primary_region = 'iad'
   dockerfile = 'Dockerfile'
 
 
-# Keep worker running
-min_machines_running = 0
-auto_start_machines = true
+[env]
+  auto_start_machines = 'true'
+  min_machines_running = '0'  
+
+[http_service]
+  auto_stop_machines = true
+
 
 [[vm]]
   memory = '256mb'

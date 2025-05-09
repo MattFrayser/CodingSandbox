@@ -10,11 +10,15 @@ primary_region = 'iad'
   dockerfile = 'Dockerfile'
 
 [env]
-  LANGUAGE = 'c'
-  MAX_EXECUTION_TIME = '3'
-  MAX_MEMORY_MB = '100'
   auto_start_machines = 'true'
-  min_machines_running = '0'
+  min_machines_running = '0'  
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
 
 [[vm]]
   memory = '256mb'
