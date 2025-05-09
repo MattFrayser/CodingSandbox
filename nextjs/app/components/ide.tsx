@@ -6,6 +6,8 @@ import * as actions from '../actions';
 import { VscSave, VscDebugRestart , VscShare, VscSettingsGear} from "react-icons/vsc";
 import { MdOutlineFileDownload } from "react-icons/md";
 
+import { webSocket } from '../hooks/webSocket';
+
 interface JobResult {
   status: string;
   result: string;
@@ -43,7 +45,104 @@ export default function IDE() {
   const [fontSize, setFontSize] = useState(18);
   const [tabSize, setTabSize] = useState(2);
   const [enableAutocomplete, setEnableAutocomplete] = useState(true);
+  const [jobId, setJobId] = useState<string | null>(null);
 
+  const { 
+    status, 
+    result, 
+    error, 
+    connectionState,
+    executionTime 
+  } = webSocket(jobId, {
+    apiKey: process.env.NEXT_PUBLIC_API_KEY || '',
+    reconnectAttempts: 3,
+    pingInterval: 30000
+  });
+
+  useEffect(() => {
+    // Handle connection state changes
+    if (connectionState === 'connecting') {
+      setOutput(prev => [
+        ...prev.filter(msg => !msg.startsWith('Connection')),
+        'Connection: Connecting to server...'
+      ]);
+    } else if (connectionState === 'reconnecting') {
+      setOutput(prev => [
+        ...prev.filter(msg => !msg.startsWith('Connection')),
+        'Connection: Reconnecting...'
+      ]);
+    } else if (connectionState === 'authenticating') {
+      setOutput(prev => [
+        ...prev.filter(msg => !msg.startsWith('Connection')),
+        'Connection: Authenticating...'
+      ]);
+    }
+    
+    // Handle job status changes
+    if (status === 'queued' || status === 'processing') {
+      setOutput(prev => [
+        ...prev.filter(msg => !msg.startsWith('Job ')),
+        `Job ${status}...`
+      ]);
+    }
+    
+    // Handle job completion
+    if (status === 'completed' && result) {
+      const executionMsg = executionTime ? 
+        `Execution completed in ${executionTime.toFixed(2)}s` :
+        'Execution completed';
+        
+      setOutput(prev => [
+        ...prev.filter(msg => !msg.includes('Job') && !msg.includes('Execution')),
+        executionMsg,
+        ...(result.stdout ? [`Output: ${result.stdout}`] : []),
+        ...(result.stderr ? [`Error: ${result.stderr}`] : [])
+      ]);
+      setIsExecuting(false);
+    }
+    
+    // Handle job failure or errors
+    if (status === 'failed' || error) {
+      setOutput(prev => [
+        ...prev.filter(msg => !msg.startsWith('Job ')),
+        "Job failed",
+        error || ""
+      ]);
+      setIsExecuting(false);
+    }
+  }, [status, result, error, connectionState, executionTime]);
+
+  // API Call
+  const execute = async (code: string, language: string) => {
+    if (!code.trim()) {
+      setOutput(["Please enter some code"]);
+      return;
+    }
+  
+    setIsExecuting(true);
+    setOutput(["Submitting code..."]);
+    
+    try {
+      const fullFilename = `${filename}${fileExt}`;
+      const response = await actions.executeCode(code, language, fullFilename);
+      
+      if (!response?.job_id) {
+        throw new Error("Failed to start job");
+      }
+      
+      // Set the job ID to trigger WebSocket connection
+      setJobId(response.job_id);
+      setOutput(["Code submitted. Waiting for execution..."]);
+      
+    } catch (err: any) {
+      setOutput(prev => [
+        ...prev,
+        "Submission failed",
+        err.message || "Unknown error occurred"
+      ]);
+      setIsExecuting(false);
+    }
+  };
 
 // Update code as typed
 const handleChange = (value: string = "") => {
@@ -55,122 +154,6 @@ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setOutput([]);
     await execute(code, language);
-};
-
-// Call functions with api calls
-const execute = async (code: string, language: string) => {
-    if (!code.trim()) {
-      setOutput(["Please enter some code"]);
-      return;
-    }
-  
-    setIsExecuting(true);
-    setOutput(["Compiling code..."]);
-    
-    try {
-      const fullFilename = `${filename}${fileExt}`;
-      const response = await actions.executeCode(code, language, fullFilename);
-      
-      if (!response?.job_id) {
-        throw new Error("Failed to start job");
-      }
-      
-      await pollJobStatus(response.job_id);
-      
-    } catch (err: any) {
-      setOutput(prev => [
-        ...prev,
-        "Execution failed",
-        err.message || "Unknown error occurred"
-      ]);
-    } finally {
-      setIsExecuting(false);
-    }
-};
-
- // Poll for job status
- const pollJobStatus = async (job_id: string) => {
-  const maxAttempts = 10;
-  let attempts = 0;
-  let lastStatus = '';
-  
-  while (attempts < maxAttempts) {
-    try {
-      const response = await actions.getJob(job_id);
-      console.log("Job response:", response); // Debug log
-      
-      // Only update output if status changed
-      if (response.status !== lastStatus) {
-        switch (response.status) {
-          case 'completed':
-            try {
-              // Parse the result JSON string into an object
-              const resultObj = JSON.parse(response.result);
-              console.log("Parsed result:", resultObj); // Debug log
-              
-              setOutput(prev => [
-                ...prev.filter(msg => !msg.startsWith('Job ')),
-                ...(resultObj.stdout ? [`Output: ${resultObj.stdout}`] : []),
-                ...(resultObj.stderr ? [`Error: ${resultObj.stderr}`] : [])
-              ]);
-            } catch (parseErr) {
-              console.error("Failed to parse result:", parseErr, response.result);
-              setOutput(prev => [
-                ...prev.filter(msg => !msg.startsWith('Job ')),
-                "Error parsing result",
-                `Raw result: ${response.result}`
-              ]);
-            }
-            return;
-            
-          case 'failed':
-            setOutput(prev => [
-              ...prev.filter(msg => !msg.startsWith('Job ')),
-              "Job failed"
-            ]);
-            return;
-            
-          case 'queued':
-          case 'processing':
-            setOutput(prev => [
-              ...prev.filter(msg => !msg.startsWith('Job ')),
-              `Job ${response.status}...`
-            ]);
-            break;
-            
-          default:
-            setOutput(prev => [
-              ...prev.filter(msg => !msg.startsWith('Job ')),
-              `Job status: ${response.status}`
-            ]);
-        }
-        lastStatus = response.status;
-      }
-      
-      // If job is still in progress, wait and try again
-      if (response.status === 'queued' || response.status === 'processing') {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        attempts++;
-      } else {
-        // Job is finished one way or another
-        return;
-      }
-      
-    } catch (err: any) {
-      console.error("Poll error:", err);
-      setOutput(prev => [
-        ...prev.filter(msg => !msg.startsWith('Job ')),
-        "Polling error",
-        err.message || String(err)
-      ]);
-      return;
-    }
-  }
-  
-  setOutput(prev => [
-    ...prev.filter(msg => !msg.startsWith('Job ')),
-    "Execution timed out"
-  ]);
 };
 
   // Function to handle file download
