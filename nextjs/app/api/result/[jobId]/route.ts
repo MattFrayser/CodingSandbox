@@ -1,4 +1,3 @@
-// File: nextjs/app/api/result/[jobId]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 const API_URL = process.env.API_URL;
@@ -6,11 +5,11 @@ const API_KEY = process.env.API_KEY;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { jobId: string } }
+  context: { params: Promise<{ jobId: string }> }
 ) {
   try {
-    // Await the params object to ensure it's resolved (Next.js best practice)
-    const { jobId } = await Promise.resolve(params);
+    // Await the params promise
+    const { jobId } = await context.params;
     
     console.log(`Fetching result for job ${jobId}`);
     

@@ -10,9 +10,12 @@ primary_region = 'iad'
   dockerfile = 'Dockerfile'
 
 [env]
-  LANGUAGE = 'cpp'
   auto_start_machines = 'true'
-  min_machines_running = '0'
+  min_machines_running = '0'  
+
+[http_service]
+  auto_stop_machines = true
+
 
 [[vm]]
   memory = '256mb'

@@ -16,7 +16,7 @@ def worker_loop():
         while True:
             try:
 
-                job_id = redis_conn.brpop("queue:cpp", timeout=5)
+                job_id = redis_conn.brpop("queue:cpp", timeout=30)
                 
                 if job_id:
                     job_id = job_id[1]
