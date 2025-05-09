@@ -14,7 +14,7 @@ primary_region = 'iad'
   MAX_EXECUTION_TIME = '3'
   MAX_MEMORY_MB = '100'
   auto_start_machines = 'true'
-  min_machines_running = '1'
+  min_machines_running = '0'
 
 [[vm]]
   memory = '256mb'

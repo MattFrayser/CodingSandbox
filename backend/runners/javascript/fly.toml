@@ -8,7 +8,7 @@ primary_region = 'iad'
   LANGUAGE = "javascript"
 
 # Keep worker running
-min_machines_running = 1
+min_machines_running = 0
 auto_start_machines = true
 
 [[vm]]
