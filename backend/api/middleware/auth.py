@@ -60,25 +60,32 @@ def require_api_key(func):
 
 async def generate_ws_token(job_id: str, api_key: str) -> str:
     """Generate a WebSocket access token for a specific job"""
-    if not JWT_SECRET:
-        raise ValueError("JWT_SECRET_KEY environment variable is not set")
+    jwt_key = os.getenv("JWT_KEY")
+    if not jwt_key:
+        print("JWT_KEY not found in environment")
+        raise ValueError("JWT key not configured")
     
-    # Verify API key before creating token
-    if not hmac.compare_digest(api_key, os.getenv("API_KEY", "")):
-        raise HTTPException(status_code=403, detail="Invalid API key")
+    # Simple API key validation
+    expected_key = os.getenv("API_KEY", "")
+    if not api_key or api_key != expected_key:
+        raise ValueError("Invalid API key")
     
     # Create token payload
     payload = {
-        "sub": "api_client",  # You might want to use a more specific identifier
+        "sub": "api_client",
         "exp": int(time.time()) + JWT_EXPIRATION,
         "jti": f"{job_id}_{int(time.time())}",
         "scope": f"job:{job_id}:read",
-        "job_id": job_id  # Include the job ID in the payload
+        "job_id": job_id
     }
     
     # Create and return token
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-
+    try:
+        return jwt.encode(payload, jwt_key, algorithm=JWT_ALGORITHM)
+    except Exception as e:
+        print(f"JWT encoding error: {str(e)}")
+        raise ValueError(f"Token generation failed: {str(e)}")
+        
 async def verify_token(token: str) -> Optional[TokenPayload]:
     """Verify JWT token for Socket.io authentication"""
     if not JWT_SECRET:

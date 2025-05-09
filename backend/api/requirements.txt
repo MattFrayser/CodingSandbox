@@ -9,3 +9,4 @@ httpx
 python-engineio
 python-socketio
 jwt
+pyjwt

@@ -10,6 +10,7 @@ import asyncio
 from connect.config import redis_conn
 from middleware.auth import require_api_key, verify_api_key
 from middleware.security import add_security_middleware
+from api.socketio import setup_socketio
 
 load_dotenv()
 
@@ -62,9 +63,12 @@ job_queue = Queue(connection=redis_conn)
 # Import routers after creating app
 from api.submit import router as submit_router
 from api.result import router as result_router
+from api.auth import router as auth_router
+
 
 app.include_router(submit_router)
 app.include_router(result_router)
+app.include_router(auth_router)
 
 app.on_event("startup")
 async def startup_event():

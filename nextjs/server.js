@@ -240,7 +240,7 @@ app.prepare().then(() => {
         });
         
         // Set up a WebSocket connection to the backend to receive job updates
-        const jobSocket = new WebSocket(`${WS_API_URL}/ws/jobs/${jobId}?token=${socket.token}`);
+        const jobSocket = new WebSocket(`${WS_API_URL}/socket.io/?token=${socket.token}`);
         
         // Store the backend socket connection in the client's socket object
         socket.backendSocket = jobSocket;
