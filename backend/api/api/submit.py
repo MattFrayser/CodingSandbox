@@ -96,6 +96,9 @@ async def execute(submission: CodeSubmission, request: Request):  # Rename for c
     redis_conn.lpush(f"queue:{submission.language}", job_id)
     print(f"Pushed job {job_id} to queue:{submission.language}")
     
+    # Publish notification
+    redis_conn.publish("job_notifications", submission.language)
+    
     return {
         "job_id": job_id,
         "message": "Job queued"

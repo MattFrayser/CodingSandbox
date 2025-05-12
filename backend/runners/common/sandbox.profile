@@ -1,4 +1,4 @@
-# Disable dangerous features
+# Basic Profile to Disable dangerous features
 net none
 no3d
 nodvd

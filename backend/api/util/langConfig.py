@@ -1,6 +1,10 @@
 from models.schema import Language
 
 def get_config(language: Language, filename: str) -> dict:
+    """
+    Configs for running different langauges
+    """
+    
     config = {
         Language.PYTHON: {
             "rootfs": "python",

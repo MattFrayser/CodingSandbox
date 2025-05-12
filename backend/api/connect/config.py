@@ -4,7 +4,10 @@ import json
 import ssl
 
 def create_redis_connection():
-    # Create default SSL context with certificate verification
+    """
+    Create redis connection for APIs
+    """
+    
     ssl_context = ssl.create_default_context()
     
     return Redis(

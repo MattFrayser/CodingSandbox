@@ -14,7 +14,9 @@ event_counts: Dict[str, Dict[str, int]] = {}
 last_reset: Dict[str, float] = {}
 
 async def is_rate_limited(client_ip: str) -> bool:
-    """Check if client IP is rate limited"""
+    """
+    Check if client IP is over rate limit
+    """
     now = time.time()
     
     # Reset counter if window expired

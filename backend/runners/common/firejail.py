@@ -3,8 +3,9 @@ import os
 import tempfile
 
 def firejail_execute(cmd, tmpdir, timeout=10):
-    """Execute a command in a Firejail sandbox with security restrictions"""
-    profile_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sandbox.profile")
+    """
+    Execute a command in a Firejail sandbox with security restrictions.
+    """
 
     firejail_cmd = [
         "firejail",

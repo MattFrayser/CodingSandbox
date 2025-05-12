@@ -6,6 +6,11 @@ from firejail import firejail_execute
 import re
 
 def execute_code(code: str, filename: str):
+    """
+    C++ Sandbox.
+    Create temp directory. Write code to file in dir. Compile and run code in firejail.   
+    """
+
     with tempfile.TemporaryDirectory() as tmpdir:
 
         if not re.match(r'^[a-zA-Z0-9_.-]+$', filename):

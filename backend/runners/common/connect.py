@@ -3,23 +3,23 @@ import os
 import ssl
 
 def create_redis_connection():
-        try:
+    """
+    Connect to redis, return connection.
+    """
+    try:
+        conn = redis.Redis(
+            host=os.getenv("REDIS_HOST"),
+            port=int(os.getenv("REDIS_PORT", "6379")),
+            password=os.getenv("REDIS_PASS"),
+            decode_responses=True,
+            ssl=os.getenv("REDIS_SSL", "True").lower() == "true",
+            socket_timeout=5,
+            socket_connect_timeout=5,
+            health_check_interval=15
+        )
             
-            # Create Redis connection with current recommended parameters
-            conn = redis.Redis(
-                host=os.getenv("REDIS_HOST"),
-                port=int(os.getenv("REDIS_PORT", "6379")),
-                password=os.getenv("REDIS_PASS"),
-                decode_responses=True,
-                ssl=os.getenv("REDIS_SSL", "True").lower() == "true",
-                socket_timeout=5,
-                socket_connect_timeout=5,
-                health_check_interval=15
-            )
-            
-            # Test connection
-            print(f"Successfully connected to Redis")
-            return conn
-        except Exception as e:
-            print(f"Redis connection attempt failed: {str(e)}")
-            raise
+        print(f"Connected to Redis")
+        return conn
+    except Exception as e:
+        print(f"Redis connection attempt failed: {str(e)}")
+        raise

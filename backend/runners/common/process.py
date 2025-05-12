@@ -4,21 +4,26 @@ import json
 import time
 
 def process_job(job_id, redis_conn, execute_code, language):
-    """Process a code execution job and publish status updates via Redis"""
+    """
+    Process a code execution job and publish status updates via Redis
+    """
     
+    # Check jobID
     if not job_id or not isinstance(job_id, str) or not re.match(r'^[a-zA-Z0-9\-]+$', job_id):
         print(f"Invalid job_id: {job_id}")
         return False
 
+    # Get job from redis
     job = redis_conn.hgetall(f"job:{job_id}")
     
+    # Check language
     if not job or job.get("language") != language:
         return False
     
     # Helper function to publish status updates
     def publish_update(status, result=None, error=None):
         update = {
-            "type": "status_update",  # Add type for Socket.io
+            "type": "status_update",
             "job_id": job_id,
             "status": status,
             "timestamp": time.time()
@@ -30,7 +35,7 @@ def process_job(job_id, redis_conn, execute_code, language):
         if error is not None:
             update["error"] = error
             
-        # Publish to Redis channel - this will be picked up by Socket.io
+        # Publish to Redis channel
         redis_conn.publish(f"job:{job_id}:updates", json.dumps(update))
     
     try:
@@ -50,7 +55,7 @@ def process_job(job_id, redis_conn, execute_code, language):
         # Execute the code
         print(f"Executing code for job {job_id}, language: {language}")
         execution_start = time.time()
-        result = execute_code(code, filename)
+        result = execute_code(code, filename) # Call execute func
         execution_time = time.time() - execution_start
         
         # Add execution time to result

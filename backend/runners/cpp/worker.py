@@ -8,6 +8,11 @@ from process import process_job
 from connect import create_redis_connection
 
 def worker_loop():
+    """
+    C++ Worker.
+    Connect to redis. Loop for jobs in queue to Process. Shutdown after inactivity.  
+    """
+
     print("Worker started")
     last_job_time = time.time()
     max_idle_time = 60 
@@ -16,8 +21,10 @@ def worker_loop():
         while True:
             try:
 
+                # get job from queue
                 job_id = redis_conn.brpop("queue:cpp", timeout=30)
                 
+                # if got then process, else exit after 1 min of no use
                 if job_id:
                     job_id = job_id[1]
                     print(f"Processing job: {job_id}")

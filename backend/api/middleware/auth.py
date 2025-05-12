@@ -29,7 +29,7 @@ def require_api_key(func):
         if not request:
             raise HTTPException(status_code=500, detail="Request object not found")
         
-        # Skip API key check for OPTIONS requests (CORS preflight)
+        # Skip API key check for OPTIONS requests
         if request.method == "OPTIONS":
             return await func(*args, **kwargs)
         

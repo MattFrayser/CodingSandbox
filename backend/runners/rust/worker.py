@@ -7,7 +7,12 @@ from sandbox import execute_code
 from process import process_job
 from connect import create_redis_connection
 
-def worker_loop():
+def worker_loop():   
+    """
+    Rust Worker.
+    Connect to redis. Loop for jobs in queue to Process. Shutdown after inactivity.  
+    """
+
     print("Worker started")   
     last_job_time = time.time()
     max_idle_time = 60 
@@ -15,9 +20,11 @@ def worker_loop():
     try:
         while True:
             try:
-
+                
+                # get job from queue
                 job_id = redis_conn.brpop("queue:rust", timeout=30)
                 
+                # if got then process, else exit after 1 min of no use
                 if job_id:
                     job_id = job_id[1]
                     print(f"Processing job: {job_id}")

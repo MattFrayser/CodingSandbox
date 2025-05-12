@@ -3,68 +3,115 @@ import { NextRequest, NextResponse } from 'next/server';
 const API_URL = process.env.API_URL;
 const API_KEY = process.env.API_KEY;
 
+// Error logging utility
+function logError(error: any, context: string, requestId?: string) {
+  const errorData = {
+    timestamp: new Date().toISOString(),
+    context,
+    requestId,
+    error: error instanceof Error ? {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    } : error
+  };
+  
+ // console.error('[API_ERROR]', JSON.stringify(errorData, null, 2));
+}
+
+function generateRequestId(): string {
+  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ jobId: string }> }
 ) {
+  const requestId = generateRequestId();
+  
   try {
-    // Await the params promise
     const { jobId } = await context.params;
     
-    console.log(`Fetching result for job ${jobId}`);
+    // Validate jobId
+    if (!jobId || !/^[a-zA-Z0-9\-]+$/.test(jobId)) {
+      logError({ invalidJobId: jobId }, 'Job ID validation', requestId);
+      return NextResponse.json(
+        { 
+          error: 'Invalid job ID',
+          requestId 
+        },
+        { status: 400 }
+      );
+    }
     
     const response = await fetch(`${API_URL}/api/get_result/${jobId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': API_KEY || ''
+        'X-API-Key': API_KEY || '',
+        'X-Request-ID': requestId
       }
     });
     
-    // Check if response is OK
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("API returned error:", {
-        status: response.status,
-        text: errorText
-      });
+      logError(
+        {
+          status: response.status,
+          statusText: response.statusText,
+          responseBody: errorText,
+          jobId
+        },
+        'Result fetch error',
+        requestId
+      );
       
+      // Return generic error message
       return NextResponse.json(
-        { error: `API Error: ${response.status}`, details: errorText },
-        { status: response.status }
+        { 
+          error: 'Failed to fetch job result',
+          requestId 
+        },
+        { status: response.status === 404 ? 404 : 500 }
       );
     }
     
-    // Process response
     const contentType = response.headers.get('content-type');
     
     if (contentType && contentType.includes('application/json')) {
-      const data = await response.json();
-      return NextResponse.json(data, { status: response.status });
+      try {
+        const data = await response.json();
+        return NextResponse.json({
+          ...data,
+          requestId
+        }, { status: response.status });
+      } catch (jsonError) {
+        logError(jsonError, 'Result JSON parsing', requestId);
+        return NextResponse.json(
+          { 
+            error: 'Invalid result format',
+            requestId 
+          },
+          { status: 500 }
+        );
+      }
     } else {
-      const text = await response.text();
-      console.log("API returned non-JSON response:", text);
-      
       return NextResponse.json(
-        { result: text },
-        { status: response.status }
+        { 
+          error: 'Invalid result format',
+          requestId 
+        },
+        { status: 500 }
       );
     }
   } catch (error: unknown) {
-    console.error("Error in result fetch proxy:", error);
-    
-    let errorMessage = "Failed to fetch result";
-    
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === 'string') {
-      errorMessage = error;
-    } else if (error && typeof error === 'object' && 'toString' in error) {
-      errorMessage = error.toString();
-    }
+    logError(error, 'Get result unhandled exception', requestId);
     
     return NextResponse.json(
-      { error: 'Failed to fetch result', details: errorMessage },
+      { 
+        error: 'Internal server error',
+        requestId 
+      },
       { status: 500 }
     );
   }

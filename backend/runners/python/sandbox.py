@@ -8,6 +8,11 @@ from firejail import firejail_execute
 import re
 
 def execute_code(code: str, filename: str):
+    """
+    Python Sandbox.
+    Create temp directory. Write code to file in dir. Compile and run code in firejail.   
+    """
+
     # Create temporary directory with restricted permissions
     with tempfile.TemporaryDirectory() as tmpdir:
 
