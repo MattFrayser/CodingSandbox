@@ -1,6 +1,10 @@
 from redis import Redis
 import os
 import ssl
+import time
+
+from _logger import logger
+from config import LANGUAGE_APPS
 
 def create_redis_connection():
     # Create default SSL context with certificate verification
@@ -13,9 +17,12 @@ def create_redis_connection():
         decode_responses=True,
         ssl=True,
     )
+redis_conn = create_redis_connection()
 
-def monitor_queues_pubsub():
+
+def monitor_queues():
     """Monitor Redis queues"""
+    from orchestrator import start_runner
 
     logger.info("Starting queue monitoring")
     
@@ -67,7 +74,7 @@ def monitor_queues_pubsub():
                         start_runner(app_name)
                     else:
                         logger.warning(f"Received notification for {language} but queue is empty")
-                        
+
         except Exception as e:
             logger.exception(f"Error handling pub/sub message: {str(e)}")
             logger.exception(f"Error handling pub/sub message: {str(e)}")
@@ -90,10 +97,3 @@ def check_all_queues_once():
                 
     except Exception as e:
         logger.error(f"Error checking queues at startup: {str(e)}")
-
-if __name__ == "__main__":
-    logger.info("Orchestrator Starting")
-    redis_conn = create_redis_connection()
-    if redis_conn: 
-        logger.info("Redis connection established")
-    monitor_queues_pubsub()

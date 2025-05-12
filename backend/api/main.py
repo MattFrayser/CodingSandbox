@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import ssl
 import time
+import hmac
 
 # Local Imports 
 from connect.config import redis_conn
@@ -96,9 +97,6 @@ async def rate_limit(request: Request, call_next):
     except Exception as e:
         print(f"Rate limiting error: {str(e)}")
         return await call_next(request) # In case of Redis errors, allow the request to proceed
-
-
-job_queue = Queue(connection=redis_conn)
 
 
 # Import routers after creating app

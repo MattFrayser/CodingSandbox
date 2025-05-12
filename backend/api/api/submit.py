@@ -6,17 +6,12 @@ import re
 from fastapi import Depends
 import time
 
-from models.schema import Language, SUPPORTED_LANGUAGES, BLOCKED_KEYWORDS, BLOCKED_PATTERNS
+from models.schema import Language, CodeSubmission, SUPPORTED_LANGUAGES, BLOCKED_KEYWORDS, BLOCKED_PATTERNS
 from connect.config import redis_conn
 from middleware.auth import require_api_key, verify_api_key
 
 
 router = APIRouter(prefix="/api")
-
-class CodeSubmission(BaseModel):
-    code: str
-    language: str
-    filename: str
 
 # check for dangerous keywords asscoiates with that language
 def check_keywords(code:str, language: str):
@@ -55,20 +50,35 @@ def normalize_code(code: str, language:str):
     
     return code
 
-@router.post("/submit_code")
-@require_api_key
-async def execute(submission: CodeSubmission, request: Request):  # Rename for clarity
-    # Additional validation
-    if len(submission.code) > 10000:  # Limit code size
-        raise HTTPException(status_code=400, detail="Code too large")
+# Check file details
+def validate_submission(submission):
+    """Comprehensive submission validation"""
+    # Size validation
+    if len(submission.code) > 10000:
+        raise HTTPException(status_code=400, detail="Code too large (max 10KB)")
         
-    # More input sanitation
+    # Content validation
+    if not submission.code.strip():
+        raise HTTPException(status_code=400, detail="Code cannot be empty")
+        
+    # Filename validation
     if not re.match(r'^[a-zA-Z0-9_.-]+$', submission.filename):
         raise HTTPException(status_code=400, detail="Invalid filename")
         
-    # Check if language is supported
+    # Language validation
     if submission.language not in SUPPORTED_LANGUAGES:
-        raise HTTPException(status_code=400, detail="Language not supported")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Language not supported. Use one of: {', '.join(SUPPORTED_LANGUAGES)}"
+        )
+    
+    return True
+
+@router.post("/submit_code")
+@require_api_key
+async def execute(submission: CodeSubmission, request: Request):  # Rename for clarity
+
+    validate_submission(submission)
 
     # Normalize and security check
     normalized_code = normalize_code(submission.code, submission.language)

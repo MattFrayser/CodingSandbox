@@ -1,27 +1,12 @@
 import os
 import time
-import logging
 import requests
 from typing import Dict, List, Tuple
 
 # Local Imports
-from connect import redis_conn
-
-# Logging setup
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('safe_orchestrator')
-
-# language to app name MAP
-LANGUAGE_APPS = {
-    "python": "codr-python-runner",
-    "javascript": "codr-javascript-runner",
-    "cpp": "codr-cpp-runner",
-    "c": "codr-c-runner",
-    "rust": "codr-rust-runner",
-}
+from connect import redis_conn, monitor_queues
+from _logger import logger
+from config import LANGUAGE_APPS
 
 # Track which apps we've requested to start
 starting_apps = {}
@@ -229,35 +214,6 @@ def clean_starting_apps():
     
     for app in to_remove:
         del starting_apps[app]
-
-def monitor_queues():
-    """Monitor Redis queues and start appropriate runners"""
-    logger.info("Starting queue monitoring with Fly.io API")
-    
-    while True:
-        try:
-            clean_starting_apps()
-            
-            # Check all queues in a single pipeline
-            pipe = redis_conn.pipeline()
-            for language in LANGUAGE_APPS:
-                pipe.llen(f"queue:{language}")
-            
-            # Execute pipeline
-            queue_lengths = pipe.execute()
-            
-            # Process results
-            for i, (language, app_name) in enumerate(LANGUAGE_APPS.items()):
-                if queue_lengths[i] > 0:
-                    logger.info(f"Jobs waiting for {language}: {queue_lengths[i]}")
-                    start_runner(app_name)
-            
-            # Wait before checking again
-            time.sleep(10)
-            
-        except Exception as e:
-            logger.exception(f"Error in monitoring loop: {str(e)}")
-            time.sleep(10)
 
 if __name__ == "__main__":
     logger.info("Orchestrator Starting")

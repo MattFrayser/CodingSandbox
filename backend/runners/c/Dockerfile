@@ -4,6 +4,6 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y gcc && apt-get clean
 
-COPY worker.py sandbox.py .
+COPY sandbox.py .
 
 CMD ["python", "worker.py"]

@@ -152,12 +152,18 @@ def background_cache_cleanup():
             cache_keys = redis_conn.keys("cache:*")
             
             for key in cache_keys:
-                # Check if key exists (may have been cleaned by Redis TTL)
-                if not redis_conn.exists(key):
-                    continue
-                
-                # This is just a periodic check - Redis TTL handles most cleanup
-                
+                # Get the cached data
+                cached_data = redis_conn.get(key)
+                if cached_data:
+                    try:
+                        data = json.loads(cached_data)
+                        # Remove if expired
+                        if time.time() - data.get("timestamp", 0) > 60:  # Default TTL
+                            redis_conn.delete(key)
+                    except json.JSONDecodeError:
+                        # Invalid cache data, remove it
+                        redis_conn.delete(key)
+            
             # Sleep for 5 minutes
             time.sleep(300)
             
