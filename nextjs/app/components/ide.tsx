@@ -90,119 +90,95 @@ const execute = async (code: string, language: string) => {
 
  // Poll for job status
  const pollJobStatus = async (job_id: string) => {
-  const maxAttempts = 20;
+  const maxAttempts = 30;
   let attempts = 0;
   let lastStatus = '';
   let backoffTime = 1000; // Start with 1 second
   
-  // interface for cache entries
-  interface CacheEntry {
-    status: string;
-    result: string;
-  }
-  
-  // Local cache
-  const resultCache: Record<string, CacheEntry> = {};
-  
   while (attempts < maxAttempts) {
     try {
-      // Check local cache first
-      if (resultCache[job_id] && 
-          ["completed", "failed"].includes(resultCache[job_id].status)) {
-        return;
-      }
-      
       const response = await actions.getJob(job_id);
+      console.log("Poll response:", response);
       
-      // Cache the result
-      resultCache[job_id] = response;
-      // Only update output if status changed
+      // Update output based on status change
       if (response.status !== lastStatus) {
-        switch (response.status) {
-          case 'completed':
-            try {
-              let resultObj;
-              
-              // Handle various result formats
-              if (typeof response.result === 'string') {
-                try {
-                  // Try to parse the string as JSON
-                  resultObj = JSON.parse(response.result);
-                } catch (stringParseErr) {
-                  // If that fails, use it directly
-                  resultObj = { stdout: response.result, stderr: '' };
-                }
-              } else {
-                // Already an object
-                resultObj = response.result;
-              }
-              
-              setOutput(prev => [
-                ...prev.filter(msg => !msg.startsWith('Job ')),
-                ...(resultObj.stdout ? [`Output: ${resultObj.stdout}`] : []),
-                ...(resultObj.stderr ? [`Error: ${resultObj.stderr}`] : [])
-              ]);
-
-        
-              console.log('Raw response from API:', response);
-              console.log('Result type:', typeof response.result);
-              console.log('Result value:', response.result);
-              
-              setIsExecuting(false);
-              return;
-            } catch (parseErr) {
-              console.error("Failed to parse result:", parseErr);
-              setOutput(prev => [
-                ...prev.filter(msg => !msg.startsWith('Job ')),
-                "Error parsing result"
-              ]);
-              setIsExecuting(false);
-              return;
-            }
-            
-          case 'failed':
-            setOutput(prev => [
-              ...prev.filter(msg => !msg.startsWith('Job ')),
-              "Job failed"
-            ]);
-            setIsExecuting(false);
-            return;
-            
-          case 'queued':
-          case 'processing':
-            setOutput(prev => [
-              ...prev.filter(msg => !msg.startsWith('Job ')),
-              `Job ${response.status}...`
-            ]);
-            break;
-        }
+        setOutput(prev => [
+          ...prev.filter(msg => !msg.startsWith('Job ')),
+          `Job ${response.status}...`
+        ]);
         lastStatus = response.status;
       }
       
-      // If job is still in progress, wait with increasing backoff
+      // Process completed jobs
+      if (response.status === 'completed') {
+        try {
+          // Handle result object directly - it's already parsed correctly
+          if (response.result && typeof response.result === 'object') {
+            const result = response.result;
+            setOutput([
+              ...(result.stdout ? [`Output: ${result.stdout}`] : []),
+              ...(result.stderr ? [`Error: ${result.stderr}`] : [])
+            ]);
+            setIsExecuting(false);
+            return;
+          } 
+          // Handle string result that needs parsing
+          else if (typeof response.result === 'string') {
+            try {
+              const resultObj = JSON.parse(response.result);
+              setOutput([
+                ...(resultObj.stdout ? [`Output: ${resultObj.stdout}`] : []),
+                ...(resultObj.stderr ? [`Error: ${resultObj.stderr}`] : [])
+              ]);
+            } catch (e) {
+              // String that's not JSON
+              setOutput([`Output: ${response.result}`]);
+            }
+            setIsExecuting(false);
+            return;
+          }
+          // Handle null/undefined result
+          else {
+            setOutput(["No output returned"]);
+            setIsExecuting(false);
+            return;
+          }
+        } catch (parseErr) {
+          console.error("Error processing result:", parseErr);
+          setOutput(["Error processing result"]);
+          setIsExecuting(false);
+          return;
+        }
+      }
+      
+      // Handle failed jobs
+      if (response.status === 'failed') {
+        setOutput(["Job failed", response.error || "Unknown error"]);
+        setIsExecuting(false);
+        return;
+      }
+      
+      // Continue polling for in-progress jobs
       if (response.status === 'queued' || response.status === 'processing') {
-        // Exponential backoff - increase wait time for each attempt
         await new Promise(resolve => setTimeout(resolve, backoffTime));
-        backoffTime = Math.min(backoffTime * 1.5, 10000);
+        backoffTime = Math.min(backoffTime * 1.2, 5000);
         attempts++;
       } else {
-        // Job is finished
+        // Unknown status
+        setOutput([`Unexpected job status: ${response.status}`]);
+        setIsExecuting(false);
         return;
       }
       
     } catch (err) {
       console.error("Poll error:", err);
-      setOutput(prev => [
-        ...prev.filter(msg => !msg.startsWith('Job ')),
-        "Error checking job status"
-      ]);
-      setIsExecuting(false);
-      return;
+      attempts++;
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
   }
   
   setIsExecuting(false);
-  setOutput(prev => [...prev, "Job monitoring timed out"]);
+  setOutput(["Job monitoring timed out"]);
 };
 
   // Function to handle file download
