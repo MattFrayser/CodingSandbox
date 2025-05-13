@@ -162,7 +162,7 @@ const execute = async (code: string, language: string) => {
       if (response.status === 'queued' || response.status === 'processing') {
         // Exponential backoff - increase wait time for each attempt
         await new Promise(resolve => setTimeout(resolve, backoffTime));
-        backoffTime = Math.min(backoffTime * 1.5, 10000); // Cap at 10 seconds
+        backoffTime = Math.min(backoffTime * 1.5, 10000);
         attempts++;
       } else {
         // Job is finished

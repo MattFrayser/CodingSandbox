@@ -73,9 +73,8 @@ async def rate_limit(request: Request, call_next):
         ip_count = results[0]
         api_key_count = results[2] if api_key_key else 0
         
-        # Check rate limits
-        IP_LIMIT = 5  # 5 requests/min per IP
-        API_KEY_LIMIT = 100  # 100 requests/min per API key
+        IP_LIMIT = 15  # IP requests/min
+        API_KEY_LIMIT = 100  # API requests/min
         
         # Error handling
         if ip_count > IP_LIMIT:

@@ -103,8 +103,9 @@ async def execute(submission: CodeSubmission, request: Request):  # Rename for c
     redis_conn.expire(f"job:{job_id}", 3600)  # 1 hour TTL
     
     # Add to language-specific queue
-    redis_conn.lpush(f"queue:{submission.language}", job_id)
-    print(f"Pushed job {job_id} to queue:{submission.language}")
+    language_name = str(submission.language).split('.')[-1].lower()  # Convert "Language.NAME" to "name"
+    redis_conn.lpush(f"queue:{language_name}", job_id)
+    print(f"Pushed job {job_id} to queue:{language_name}")
     
     # Publish notification
     redis_conn.publish("job_notifications", submission.language)

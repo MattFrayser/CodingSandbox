@@ -7,7 +7,9 @@ from _logger import logger
 from config import LANGUAGE_APPS
 
 def create_redis_connection():
-    # Create default SSL context with certificate verification
+    """
+    Create redis connection for APIs
+    """
     ssl_context = ssl.create_default_context()
     
     return Redis(
@@ -17,6 +19,7 @@ def create_redis_connection():
         decode_responses=True,
         ssl=True,
     )
+
 redis_conn = create_redis_connection()
 
 
@@ -59,8 +62,8 @@ def monitor_queues():
         try:
             if message and message["type"] == "message":
 
-                 # Decode the message (language name)
-                language = message["data"].decode("utf-8")
+                 # Decode language name
+                language = message["data"] 
                 
                 # Check if we support this language
                 if language in LANGUAGE_APPS:
@@ -81,6 +84,7 @@ def monitor_queues():
 
 def check_all_queues_once():
     """Check all queues once at startup"""
+    from orchestrator import start_runner
 
     try:
         # Pipelining for efficiency

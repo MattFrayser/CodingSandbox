@@ -13,7 +13,7 @@ def create_redis_connection():
             password=os.getenv("REDIS_PASS"),
             decode_responses=True,
             ssl=os.getenv("REDIS_SSL", "True").lower() == "true",
-            socket_timeout=5,
+            socket_timeout=10,
             socket_connect_timeout=5,
             health_check_interval=15
         )

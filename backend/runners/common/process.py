@@ -38,49 +38,23 @@ def process_job(job_id, redis_conn, execute_code, language):
         # Publish to Redis channel
         redis_conn.publish(f"job:{job_id}:updates", json.dumps(update))
     
-    try:
-        # Update status to processing
-        redis_conn.hset(f"job:{job_id}", "status", "processing")
-        publish_update("processing")
-        
-        # Get code and filename
-        code = job.get("code")
-        if isinstance(code, bytes):
-            code = code.decode("utf-8")
-            
-        filename = job.get("filename")
-        if isinstance(filename, bytes):
-            filename = filename.decode("utf-8")
-        
-        # Execute the code
-        print(f"Executing code for job {job_id}, language: {language}")
-        execution_start = time.time()
-        result = execute_code(code, filename) # Call execute func
-        execution_time = time.time() - execution_start
-        
-        # Add execution time to result
-        if isinstance(result, dict):
-            result["execution_time"] = execution_time
-        
         # Store result and update status
-        result_json = json.dumps(result)
-        redis_conn.hset(f"job:{job_id}", "result", result_json)
-        redis_conn.hset(f"job:{job_id}", "status", "completed")
-        
-        # Publish completion
-        publish_update("completed", result_json)
-        
-        print(f"Job {job_id} completed in {execution_time:.3f}s")
-        return True
-        
-    except Exception as e:
-        error_message = f"Error executing job {job_id}: {str(e)}"
-        print(error_message)
-        
-        # Update job status to failed
-        redis_conn.hset(f"job:{job_id}", "status", "failed")
-        redis_conn.hset(f"job:{job_id}", "error", error_message)
-        
-        # Publish failure
-        publish_update("failed", error=error_message)
-        return False
+        try:
+            if isinstance(result.get('stdout'), str):
+                result['stdout'] = result['stdout'].encode('utf-8', 'replace').decode('utf-8')
+            if isinstance(result.get('stderr'), str):
+                result['stderr'] = result['stderr'].encode('utf-8', 'replace').decode('utf-8')
+            
+            result_json = json.dumps(result)
+            redis_conn.hset(f"job:{job_id}", "result", result_json)
+            redis_conn.hset(f"job:{job_id}", "status", "completed")
+            
+            # Publish completion
+            publish_update("completed", result_json)
+            
+        except Exception as e:
+            error_message = f"Error processing result for job {job_id}: {str(e)}"
+            print(error_message)
+            redis_conn.hset(f"job:{job_id}", "status", "failed")
+            redis_conn.hset(f"job:{job_id}", "error", error_message)
+            publish_update("failed", error=error_message)

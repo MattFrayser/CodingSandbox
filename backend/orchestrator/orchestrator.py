@@ -13,130 +13,69 @@ starting_apps = {}
 
 class FlyAPIClient:
     def __init__(self):
-        """Initate values for connection"""
-        
         self.api_token = os.getenv("FLY_API_TOKEN")
-        #Catch incorrect key 
         if not self.api_token:
-            raise ValueError("FLY_API_TOKEN is incorrect of missing.")
+            raise ValueError("FLY_API_TOKEN is incorrect or missing.")
         
-        self.base_url = "https://api.fly.io/graphql"
+        self.base_url = "https://api.machines.dev/v1"
         self.headers = {
             "Authorization": f"Bearer {self.api_token}",
             "Content-Type": "application/json"
         }
     
-    def _execute_graphql(self, query: str, variables: Dict = None) -> Dict:
-        """
-        Execute a GraphQL query safely
-        Return Dictionary of 
-        
-        """
-
+    def get_app_status(self, app_name: str) -> Dict:
+        """Get app status using REST API"""
         try:
-            response = requests.post(
-                self.base_url,
-                json={"query": query, "variables": variables or {}},
+            response = requests.get(
+                f"{self.base_url}/apps/{app_name}/machines",
                 headers=self.headers,
                 timeout=30
             )
             response.raise_for_status()
+            machines = response.json()
             
-            result = response.json()
-            if "errors" in result:
-                logger.error(f"GraphQL errors: {result['errors']}")
-                return None
-            
-            return result.get("data", {})
-            
+            return {
+                "name": app_name,
+                "machines": {
+                    "nodes": [
+                        {
+                            "id": machine["id"],
+                            "state": machine["state"]
+                        } for machine in machines
+                    ]
+                }
+            }
         except requests.RequestException as e:
             logger.error(f"API request failed: {str(e)}")
             return None
     
-    def get_app_status(self, app_name: str) -> Dict:
-        """Get app status using GraphQL"""
-
-        query = """
-        query($name: String!) {
-            app(name: $name) {
-                name
-                status
-                machines {
-                    nodes {
-                        id
-                        state
-                        ips {
-                            nodes {
-                                family
-                                address
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        """
-        
-        variables = {"name": app_name}
-        result = self._execute_graphql(query, variables)
-        
-        if result and "app" in result:
-            return result["app"]
-        return None
-    
     def start_machine(self, app_name: str, machine_id: str) -> bool:
-        """Start a specific machine using GraphQL"""
-
-        query = """
-        mutation($input: StartMachineInput!) {
-            startMachine(input: $input) {
-                machine {
-                    id
-                    state
-                }
-            }
-        }
-        """
-        
-        variables = {
-            "input": {
-                "appName": app_name,
-                "id": machine_id
-            }
-        }
-        
-        result = self._execute_graphql(query, variables)
-        
-        if result and "startMachine" in result:
+        """Start a machine using REST API"""
+        try:
+            response = requests.post(
+                f"{self.base_url}/apps/{app_name}/machines/{machine_id}/start",
+                headers=self.headers,
+                timeout=30
+            )
+            response.raise_for_status()
             return True
-        return False
+        except requests.RequestException as e:
+            logger.error(f"API request failed: {str(e)}")
+            return False
     
     def stop_machine(self, app_name: str, machine_id: str) -> bool:
-        """Stop a specific machine using GraphQL"""
-
-        query = """
-        mutation($input: StopMachineInput!) {
-            stopMachine(input: $input) {
-                machine {
-                    id
-                    state
-                }
-            }
-        }
-        """
-        
-        variables = {
-            "input": {
-                "appName": app_name,
-                "id": machine_id
-            }
-        }
-        
-        result = self._execute_graphql(query, variables)
-        
-        if result and "stopMachine" in result:
+        """Stop a machine using REST API"""
+        try:
+            response = requests.post(
+                f"{self.base_url}/apps/{app_name}/machines/{machine_id}/stop",
+                headers=self.headers,
+                timeout=30
+            )
+            response.raise_for_status()
             return True
-        return False
+        except requests.RequestException as e:
+            logger.error(f"API request failed: {str(e)}")
+            return False
 
 # Initialize the Fly API client
 try:
