@@ -48,9 +48,9 @@ def process_job(job_id, redis_conn, execute_code, language):
             result_json = json.dumps(result)
             redis_conn.hset(f"job:{job_id}", "result", result_json)
             redis_conn.hset(f"job:{job_id}", "status", "completed")
-            
-            # Publish completion
-            publish_update("completed", result_json)
+
+            # Publish completion - don't pass the serialized string
+            publish_update("completed", result)  
             
         except Exception as e:
             error_message = f"Error processing result for job {job_id}: {str(e)}"

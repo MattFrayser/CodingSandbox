@@ -121,12 +121,29 @@ const execute = async (code: string, language: string) => {
         switch (response.status) {
           case 'completed':
             try {
-              const resultObj = JSON.parse(response.result);
+              let resultObj;
+              if (typeof response.result === 'string') {
+                try {
+                  resultObj = JSON.parse(response.result);
+                } catch (e) {
+                  // If JSON parsing fails, use the string directly
+                  resultObj = { stdout: response.result, stderr: '' };
+                }
+              } else {
+                // Result is already an object
+                resultObj = response.result;
+              }
+              
               setOutput(prev => [
                 ...prev.filter(msg => !msg.startsWith('Job ')),
                 ...(resultObj.stdout ? [`Output: ${resultObj.stdout}`] : []),
                 ...(resultObj.stderr ? [`Error: ${resultObj.stderr}`] : [])
               ]);
+
+              console.log('Raw response from API:', response);
+              console.log('Result type:', typeof response.result);
+              console.log('Result value:', response.result);
+              
               setIsExecuting(false);
               return;
             } catch (parseErr) {

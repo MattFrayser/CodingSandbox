@@ -96,20 +96,26 @@ def get_job_result(job_id: str):
             "result": job.get("result")
         }
         
-        # Parse result if it's JSON
         if result["result"]:
             try:
-                result["result"] = json.loads(result["result"])
+                # If it's a string, try to parse it as JSON
+                if isinstance(result["result"], str):
+                    parsed_result = json.loads(result["result"])
+                    
+                    # Check if the parsed result is still a string that looks like JSON
+                    if isinstance(parsed_result, str) and parsed_result.startswith('{') and parsed_result.endswith('}'):
+                        try:
+                            # Try to parse one more time
+                            result["result"] = json.loads(parsed_result)
+                        except json.JSONDecodeError:
+                            # If it fails, use the first parsed result
+                            result["result"] = parsed_result
+                else:
+                    result["result"] = parsed_result
+
             except json.JSONDecodeError:
                 # Keep as string if not valid JSON
                 pass
-        
-        # Cache completed jobs with longer TTL
-        if result["status"] in ["completed", "failed"]:
-            # Use 300 seconds (5 minutes) for completed jobs
-            job_cache.set(job_id, result, ttl=300)
-        
-        return result
         
     except Exception as e:
         print(f"Error fetching job {job_id}: {str(e)}")
