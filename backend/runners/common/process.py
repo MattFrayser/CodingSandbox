@@ -40,18 +40,27 @@ def process_job(job_id, redis_conn, execute_code, language):
     
         # Store result and update status
         try:
-            if isinstance(result.get('stdout'), str):
-                result['stdout'] = result['stdout'].encode('utf-8', 'replace').decode('utf-8')
-            if isinstance(result.get('stderr'), str):
-                result['stderr'] = result['stderr'].encode('utf-8', 'replace').decode('utf-8')
-            
-            result_json = json.dumps(result)
-            redis_conn.hset(f"job:{job_id}", "result", result_json)
-            redis_conn.hset(f"job:{job_id}", "status", "completed")
-
-            # Publish completion - don't pass the serialized string
-            publish_update("completed", result)  
-            
+                if isinstance(result.get('stdout'), str):
+                    result['stdout'] = result['stdout'].encode('utf-8', 'replace').decode('utf-8')
+                if isinstance(result.get('stderr'), str):
+                    result['stderr'] = result['stderr'].encode('utf-8', 'replace').decode('utf-8')
+                
+                result_json = json.dumps(result)
+                redis_conn.hset(f"job:{job_id}", "result", result_json)
+                redis_conn.hset(f"job:{job_id}", "status", "completed")
+                
+                # Publish completion - don't pass the already serialized JSON
+                # Change this line:
+                # publish_update("completed", result_json)
+                # To this:
+                redis_conn.publish(f"job:{job_id}:updates", json.dumps({
+                    "type": "status_update",
+                    "job_id": job_id,
+                    "status": "completed",
+                    "timestamp": time.time(),
+                    "result": result  # Pass the original result object
+                }))
+                
         except Exception as e:
             error_message = f"Error processing result for job {job_id}: {str(e)}"
             print(error_message)

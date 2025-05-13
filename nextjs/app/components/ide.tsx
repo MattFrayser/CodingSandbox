@@ -122,15 +122,18 @@ const execute = async (code: string, language: string) => {
           case 'completed':
             try {
               let resultObj;
+              
+              // Handle various result formats
               if (typeof response.result === 'string') {
                 try {
+                  // Try to parse the string as JSON
                   resultObj = JSON.parse(response.result);
-                } catch (e) {
-                  // If JSON parsing fails, use the string directly
+                } catch (stringParseErr) {
+                  // If that fails, use it directly
                   resultObj = { stdout: response.result, stderr: '' };
                 }
               } else {
-                // Result is already an object
+                // Already an object
                 resultObj = response.result;
               }
               
@@ -140,6 +143,7 @@ const execute = async (code: string, language: string) => {
                 ...(resultObj.stderr ? [`Error: ${resultObj.stderr}`] : [])
               ]);
 
+        
               console.log('Raw response from API:', response);
               console.log('Result type:', typeof response.result);
               console.log('Result value:', response.result);
