@@ -1,24 +1,28 @@
 import redis
+from redis import Redis
 import os
 import ssl
 
 def create_redis_connection():
     """
-    Connect to redis, return connection.
+    Create redis connection for APIs
     """
     try:
-        conn = redis.Redis(
+        ssl_context = ssl.create_default_context()
+        
+        return Redis(
             host=os.getenv("REDIS_HOST"),
-            port=int(os.getenv("REDIS_PORT", "6379")),
+            port=int(os.getenv("REDIS_PORT")),
             password=os.getenv("REDIS_PASS"),
             decode_responses=True,
-            ssl=os.getenv("REDIS_SSL", "True").lower() == "true",
-            socket_timeout=10,
-            socket_connect_timeout=5,
-            health_check_interval=15
+            ssl=True,
         )
             
-        print(f"Connected to Redis")
+        # Verify connection
+        if conn.ping():
+            print(f"Connected to Redis successfully!")
+        else:
+            print("Redis ping failed")
         return conn
     except Exception as e:
         print(f"Redis connection attempt failed: {str(e)}")

@@ -1,4 +1,5 @@
 import time
+from redis import Redis
 import redis
 from process import process_job
 from connect import create_redis_connection
@@ -9,7 +10,7 @@ def run_worker(queue_name, execute_func, language):
     """
     print(f"{language.capitalize()} worker started")
     last_job_time = time.time()
-    max_idle_time = 120  # Increased from 60
+    max_idle_time = 300
     max_retries = 5
     retry_delay = 2
     
