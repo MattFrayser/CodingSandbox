@@ -1,7 +1,7 @@
 # Codr - CodeSandbox  
 A secure, full-stack platform to run untrusted code in real time — across 7 languages — in fully isolated Docker containers.
 
-## 🌟 Highlights
+## Highlights
 
 - 🔒 Secure sandbox execution for **Python, JavaScript, Rust, Java, C, C++**
 - 🐳 Docker containers with **CPU, memory, and network isolation**
@@ -11,7 +11,7 @@ A secure, full-stack platform to run untrusted code in real time — across 7 la
 - 🚀 Deployed frontend via **Vercel**, backend + worker via **Fly.io**
 - 💥 Rate limiting, keyword sanitization, input length checks, timeout handling
 
-## 🛡️ Security Measures
+## Security Measures
 
 Codr uses multiple layers of security to prevent abuse or escalation:
 
