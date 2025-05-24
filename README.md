@@ -1,7 +1,7 @@
 # Codr - CodeSandbox  
 A secure, full-stack platform to run untrusted code in real time — across 5 languages — in fully isolated Docker containers.
 
-# [Click Here to View Deployment](https://codr-sandbox.vercel.app/)
+[Click Here to View Deployment](https://codr-sandbox.vercel.app/)
 
 ## Highlights
 
