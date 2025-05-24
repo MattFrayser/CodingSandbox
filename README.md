@@ -1,5 +1,5 @@
 # Codr - CodeSandbox  
-A secure, full-stack platform to run untrusted code in real time — across 7 languages — in fully isolated Docker containers.
+A secure, full-stack platform to run untrusted code in real time — across 5 languages — in fully isolated Docker containers.
 
 ## Highlights
 
