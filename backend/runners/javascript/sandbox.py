@@ -36,4 +36,4 @@ def execute_code(code: str, filename: str):
             file_path
         ]
 
-        return firejail_execute(["node_cmd", file_path], tmpdir) 
+        return firejail_execute(node_cmd, tmpdir) 
