@@ -25,5 +25,15 @@ def execute_code(code: str, filename: str):
         with open(file_path, 'w') as f:
             f.write(code)
         
+        # Use Node.js flags to minimize resource usage
+        node_cmd = [
+            "node",
+            "--max-old-space-size=64",           # Limit heap to 64MB
+            "--no-concurrent-recompilation",     # Disable concurrent compilation
+            "--no-threads",                      # Disable worker threads (Node 18+)
+            "--single-threaded-gc",              # Single-threaded garbage collection
+            "--max-semi-space-size=8",           # Limit young generation
+            file_path
+        ]
 
-        return firejail_execute(["node", file_path], tmpdir) 
+        return firejail_execute(["node_cmd", file_path], tmpdir) 
