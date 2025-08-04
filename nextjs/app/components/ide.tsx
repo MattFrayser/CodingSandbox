@@ -1,10 +1,12 @@
 "use client";
 
 import Editor from "@monaco-editor/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as actions from '../actions';
-import { VscSave, VscDebugRestart , VscShare, VscSettingsGear} from "react-icons/vsc";
-import { MdOutlineFileDownload } from "react-icons/md";
+import { VscDebugRestart, VscSettingsGear} from "react-icons/vsc";
+import { MdOutlineFileDownload, MdDarkMode, MdLightMode } from "react-icons/md";
+import { Terminal as TerminalIcon, Play,  Square } from "lucide-react";
+
 
 interface JobResult {
   status: string;
@@ -14,25 +16,25 @@ interface JobResult {
 
 // Define the supported languages based on the backend
 const SUPPORTED_LANGUAGES = [
-  { value: "python", label: "Python" },
-  { value: "javascript", label: "JavaScript" },
-  { value: "cpp", label: "C++" },
-  { value: "c", label: "C" },
-  { value: "rust", label: "Rust" }
+  { value: "python", label: "Python", image: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"},
+  { value: "javascript", label: "JavaScript", image: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" },
+  { value: "cpp", label: "C++", image: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg"},
+  { value: "c", label: "C", image: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg" },
+  { value: "rust", label: "Rust", image: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rust/rust-original.svg"  }
 ]
 
 // Hello worlds for each lang
 const defaultCode = {
-  "python": '# Write your Python code here\nprint("Hello, World!")',
-  "javascript": '// Write your JavaScript code here\nconsole.log("Hello, World!");',
-  "cpp": '#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
-  "c": '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
-  "rust": 'fn main() {\n    println!("Hello, World!");\n}'
+  "python": '# Write your Python code here\nprint("Hello, from Codr!")',
+  "javascript": '// Write your JavaScript code here\nconsole.log("Hello, from Codr!");',
+  "cpp": '#include <iostream>\n\nint main() {\n    std::cout << "Hello, from Codr!" << std::endl;\n    return 0;\n}',
+  "c": '#include <stdio.h>\n\nint main() {\n    printf("Hello, from Codr!"\\n");\n    return 0;\n}',
+  "rust": 'fn main() {\n    println!("Hello, from Codr!");\n}'
 };
 
 
 export default function IDE() {
-  const [code, setCode] = useState('print("hello world")');
+  const [code, setCode] = useState('# Write your Python code here\nprint("Hello, from Codr!")');
   const [language, setLanguage] = useState<string>("python")
   const [filename, setFilename] = useState("Main");
   const [fileExt, setFileExt] = useState(".py");   
@@ -43,7 +45,7 @@ export default function IDE() {
   const [fontSize, setFontSize] = useState(18);
   const [tabSize, setTabSize] = useState(2);
   const [enableAutocomplete, setEnableAutocomplete] = useState(true);
-
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
 // Update code as typed
 const handleChange = (value: string = "") => {
@@ -60,12 +62,12 @@ const handleSubmit = async (e: React.FormEvent) => {
 // Call functions with api calls
 const execute = async (code: string, language: string) => {
     if (!code.trim()) {
-      setOutput(["Please enter some code"]);
+      setOutput(["$"]);
       return;
     }
   
     setIsExecuting(true);
-    setOutput(["Compiling code..."]);
+    setOutput(["$ Setting up your enviroment..."]);
     
     try {
       const fullFilename = `${filename}${fileExt}`;
@@ -98,14 +100,13 @@ const execute = async (code: string, language: string) => {
   while (attempts < maxAttempts) {
     try {
       const response = await actions.getJob(job_id);
-      console.log("Poll response:", response);
       
       // Update output based on status change
       if (response.status !== lastStatus) {
-        setOutput(prev => [
-          ...prev.filter(msg => !msg.startsWith('Job ')),
-          `Job ${response.status}...`
-        ]);
+        if (response.status === 'processing'){
+            setOutput(["$ Compiling..."]);
+        }
+     
         lastStatus = response.status;
       }
       
@@ -116,8 +117,8 @@ const execute = async (code: string, language: string) => {
           if (response.result && typeof response.result === 'object') {
             const result = response.result;
             setOutput([
-              ...(result.stdout ? [`Output: ${result.stdout}`] : []),
-              ...(result.stderr ? [`Error: ${result.stderr}`] : [])
+              ...(result.stdout ? [`$ ${result.stdout}`] : []),
+              ...(result.stderr ? [`$ ${result.stderr}`] : [])
             ]);
             setIsExecuting(false);
             return;
@@ -132,14 +133,14 @@ const execute = async (code: string, language: string) => {
               ]);
             } catch (e) {
               // String that's not JSON
-              setOutput([`Output: ${response.result}`]);
+              setOutput([`$ ${response.result}`]);
             }
             setIsExecuting(false);
             return;
           }
           // Handle null/undefined result
           else {
-            setOutput(["No output returned"]);
+            setOutput(["$ No output returned"]);
             setIsExecuting(false);
             return;
           }
@@ -153,7 +154,7 @@ const execute = async (code: string, language: string) => {
       
       // Handle failed jobs
       if (response.status === 'failed') {
-        setOutput(["Job failed", response.error || "Unknown error"]);
+        setOutput(["Unknown Error has occured", response.error || "Unknown error"]);
         setIsExecuting(false);
         return;
       }
@@ -178,7 +179,7 @@ const execute = async (code: string, language: string) => {
   }
   
   setIsExecuting(false);
-  setOutput(["Job monitoring timed out"]);
+  setOutput(["$ Code Execution timed out. This could be caused by an infinate loop or too long of a proccess."]);
 };
 
   // Function to handle file download
@@ -188,13 +189,13 @@ const handleDownload = () => {
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename; // Use current filename
+    a.download = filename + fileExt; // Use current filename
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    setOutput(prev => [...prev, `File downloaded as ${filename}`]);
+    setOutput([`File downloaded as ${filename}`]);
 };
 
   // Function to restart/reset the code
@@ -230,7 +231,7 @@ const handleLanguageChange = (langValue: string) => {
     };
   
     setLanguage(langValue);
-    setCode(defaultCode[langValue as keyof typeof defaultCode] || 'print("Hello, World!")');
+    setCode(defaultCode[langValue as keyof typeof defaultCode] || '# Write your Python code here\nprint("Hello, from Codr!")');
     setFileExt(fileExtensions[langValue]); // Only update extension
 };
 
@@ -255,53 +256,52 @@ const applySettings = () => {
 };
       
   return (
-    <div className="w-full max-w-6xl mx-auto my-4 rounded-lg overflow-hidden shadow-xl">
-
-      {/* Toolbar */}
-      <div className="flex justify-between py-6">
-        <div className="flex">
-          <div className="flex bg-[#3d3d3d] rounded p-2">
-            <button 
-              className="p-2 hover:bg-gray-600 rounded" 
-              onClick={handleDownload} 
-              title="Download code"
-            >
-              <MdOutlineFileDownload />
-            </button>
-            <button 
-              className="p-2 hover:bg-gray-600 rounded" 
-              onClick={handleRestart}
-              title="Reset code"
-            >
-              <VscDebugRestart />
-            </button>
-            <button 
-              className="p-2 hover:bg-gray-600 rounded" 
-              //onClick={handleShare}
-              title="Share code"
-            >
-              <VscShare />
-            </button>
-          </div>
+   <> 
+    {/* logo */ }
+    <div className="flex items-center justify-between bg-[#181818] py-4">
+        <div className="flex items-center w-full max-w-6xl px-20 mx-auto">
+          <span className="text-blue-300 font-bold text-3xl mr-1">{"<"}</span>
+          <span className="text-white font-bold text-3xl mr-1">Codr</span>
+          <span className="text-blue-300 font-bold text-3xl mr-1">{"/>"}</span>
         </div>
-        <div className="flex items-center">
-          <div className="bg-[#3d3d3d] rounded">
-            <button 
-              className="p-2 hover:bg-gray-600 rounded mr-1" 
-              onClick={handleToggleTheme}
-            >
-              Theme
-            </button>
-            <button 
-              className="p-2 hover:bg-gray-600 rounded mr-1" 
-              onClick={handleToggleSettings}
-            >
-              <VscSettingsGear />
-            </button>
-          </div>
+        {/* Toolbar */}
+        <div className="flex justify-between py-1 px-20">
+            <div className="flex">
+                    <button 
+                        className="p-2 hover:bg-gray-600 rounded" 
+                        onClick={handleDownload} 
+                        title="Download code"
+                    >
+                        <MdOutlineFileDownload size={30}/>
+                    </button>
+                    <button 
+                        className="p-2 hover:bg-gray-600 rounded" 
+                        onClick={handleRestart}
+                        title="Reset code"
+                    >
+                        <VscDebugRestart size={25} />
+                    </button>
+            </div>
+            <div className="flex items-center">
+                    <button 
+                        className="p-2 hover:bg-gray-600 rounded mr-1" 
+                        onClick={handleToggleTheme}
+                        title="Theme"
+                    >
+                        {theme === 'vs-dark' ? <MdDarkMode size={25}/> : <MdLightMode size={25}/>}
+                    </button>
+                    <button 
+                        className="p-2 hover:bg-gray-600 rounded mr-1" 
+                        onClick={handleToggleSettings}
+                        title="Settings"
+                    >
+                        <VscSettingsGear size={25}/>
+                    </button>
+            </div>
         </div>
       </div>
 
+    <div className="w-full max-w-6xl mx-auto my-1 rounded-lg overflow-hidden shadow-xl">
       {/* Settings */}
       {showSettings && (
         <div className="fixed inset-0 backdrop-blur-sm bg-opacity-40 flex items-center justify-center z-50">
@@ -391,7 +391,7 @@ const applySettings = () => {
       )}
 
       {/* Editor Bar */}
-      <div className="flex justify-between bg-[#1d1d1d]">
+      <div className="flex justify-between bg-[#171717]">
         
         {/* File Name */}
         <div className="bg-[#0f0f0f] py-2 px-4 rounded-t-lg flex items-center">
@@ -404,24 +404,37 @@ const applySettings = () => {
           <span className="text-gray-400">{fileExt}</span>
         </div>
 
-        {/* Lang Select*/}
-        <div className="flex items-center border-b border-gray-600 py-2 bg-[#1d1d1d]">
-          <div className="bg-[#3d3d3d] hover:bg-gray-600 rounded px-5 mx-4">
-            <select 
-              className="text-gray-200 outline-none bg-transparent"
-              value={language}
-              onChange={(e) => handleLanguageChange(e.target.value)}
+        {/* Lang Select */}
+        <div className="flex items-center py-2 ">
+          <div className="bg-[#3d3d3d] w-40 hover:bg-gray-600 rounded px-5 mx-4 relative">
+            <div 
+              className="text-gray-200 cursor-pointer flex items-center gap-2 py-2"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.label}
-                </option>
-              ))}
-
-            </select>
+              <img src={SUPPORTED_LANGUAGES.find(lang => lang.value === language)?.image} className="w-4 h-4" />
+              {SUPPORTED_LANGUAGES.find(lang => lang.value === language)?.label}
+            </div>
+            
+            {dropdownOpen && (
+              <div className="absolute top-full left-0 right-0 bg-[#3d3d3d] border border-gray-600 rounded mt-1 z-10">
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <div
+                    key={lang.value}
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
+                    onClick={() => {
+                      handleLanguageChange(lang.value);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    <img src={lang.image} className="w-4 h-4" />
+                    {lang.label} 
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-      </div>
-      </div>
+        </div>
+          </div>
 
       {/* Editor Section */}
       <div className="flex-grow">
@@ -450,7 +463,6 @@ const applySettings = () => {
           }}
         />
       </div>
-
       {/* Output Section */}
       <div className="h-56 bg-[#1e1e1e] border-t-10 border-[#0f0f0f]">
         {/* Console Tools */}
@@ -461,16 +473,27 @@ const applySettings = () => {
               className="flex items-center px-4 mx-4 py-1 text-sm bg-green-700 hover:bg-green-800 text-white font-medium"
               disabled={isExecuting}
             >
-              Run
+            <div className="flex items-center gap-2">
+                <Play size={14}/>
+                <span className="text-sm font-medium">Run</span>
+            </div>
+
             </button>
-            <span className="flex-grow px-4 py-1 text-sm text-gray-500"> Output </span>
           </form>
+        </div>
+
+        {/* Terminal Header */}
+        <div className="flex items-center justify-between p-2 border-b border-[#3d3d3d]">
+            <div className="flex items-center gap-2">
+                <TerminalIcon size={14} />
+                <span className="text-sm font-medium">Output</span>
+            </div>
         </div>
         
         {/* Console Output */}
         <div className="h-full overflow-auto p-4 text-sm">
           {output.length === 0 ? (
-            <div className="text-gray-500">Run your code to see output here</div>
+            <div className="text-gray-500">$</div>
           ) : (
             output.map((line, i) => (
               <pre key={i} className="text-gray-300 whitespace-pre-wrap font-mono text-sm mb-1">{line}</pre>
@@ -480,5 +503,6 @@ const applySettings = () => {
       </div>
 
     </div>
+    </>
   );
 }
