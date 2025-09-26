@@ -5,24 +5,23 @@ A secure, full-stack platform to run untrusted code in real time — across 5 la
 
 ## Highlights
 
-- 🔒 Secure sandbox execution for **Python, JavaScript, Rust, Java, C, C++**
-- 🐳 Docker containers with **CPU, memory, and network isolation**
-- 🧠 Live job queue using **Redis + RQ**
-- ⚡ Real-time status updates with async polling
-- 🧑‍💻 Built-in IDE with **Monaco Editor**, syntax highlighting, and instant feedback
-- 🚀 Deployed frontend via **Vercel**, backend + worker via **Fly.io**
-- 💥 Rate limiting, keyword sanitization, input length checks, timeout handling
+- Secure sandbox execution for **Python, JavaScript, Rust, Java, C, C++**
+- Docker containers with **CPU, memory, and network isolation**
+- Live job queue using **Redis + RQ**
+- Real-time status updates with async polling
+- Built-in IDE with **Monaco Editor**, syntax highlighting, and instant feedback
+- Rate limiting, keyword sanitization, input length checks, timeout handling
 
 ## Security Measures
 
 Codr uses multiple layers of security to prevent abuse or escalation:
 
-- 🔒 Docker container isolation
-- ⏱️ Timeouts
-- 🚫 Dangerous code filtering
-- 🧱 Rate limiting
-- 📏 Input limits
-- 🔍 No filesystem access, no persistent state, no escape
+- Docker container isolation
+- Timeouts
+- Dangerous code filtering
+- Rate limiting
+- Input limits
+- No filesystem access, no persistent state, no escape
 
 ## ⬇️ Installation
 
@@ -56,9 +55,3 @@ REDIS_PASS=password
 REDIS_PORT=6379
 EXEC_TIMEOUT=5
 ```
-
-## 💭 TODOs / Roadmap
-- Add WebSocket-based live streaming output
-- Add execution metrics and per-language analytics
-- Extend language support
-- Add custom input field for stdin
